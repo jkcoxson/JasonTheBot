@@ -113,29 +113,16 @@ setInterval(function(testing){
 //Test if a connection can be made to the server hardware. Run using:
 //ping().then(response=>console.log(response))
 //to return a true or false.
-function ping(){
-    return new Promise((resolve,reject) => {
-        pingWrapper().then(() => {
-            resolve(true);
-        }).catch(error => {
-            console.error(error);
-            resolve(false);
+function ping() {
+    return new Promise((resolve, reject) => {
+        exec(`ping 192.168.1.7 -c 1`, (error, stdout, stderr) => {
+            if (error) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
         });
     });
-}
-
-function pingWrapper(){
-    return new Promise((resolve,reject) => {
-        exec(`ping 192.168.1.7 -c 1`, (error,stdout,stderr) => {
-            if (error){
-                //console.log(`Error`);
-                reject(error);
-            }else{
-                //console.log("Good job");
-                resolve();
-            }
-        })
-    })
 }
 //Seth is pretty smart 
 
