@@ -43,6 +43,7 @@ const commands = {
                             resolve('the server is not powered on.')
                         } else { // Otherwise, start it
                             bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                            console.log('Starting server');
                             resolve('the server is now running.');
                         }
                     })
@@ -51,6 +52,7 @@ const commands = {
         } else if (args[0] === 'stop') {
             bedrock_console.kill();
             bedrock_console = null;
+            console.log('Killing server');
             resolve('server terminated.');
         }
     }),
@@ -112,11 +114,13 @@ setInterval(() => {
             if (!running) {
                 bedrock_console.kill();
                 bedrock_console = null;
+                console.log('The computer is not on, killing the SSH BDS process in Node');
             } else {
                 tasklist().then(tasks => {
                     if (!tasks.includes('bedrock_server.exe')) {
                         bedrock_console.kill();
                         bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                        console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
                     }
                 });
             }
@@ -125,6 +129,7 @@ setInterval(() => {
         tasklist().then(tasks => {
             if (tasks.includes('bedrock_server.exe')) {
                 exec(`ssh jackson@192.168.1.7 taskkill /IM "bedrock_server.exe" /F`);
+                console.log('The BDS SSH handle that Node owns is dead, but BDS isn\'t on the computer. Killing BDS');
             }
         });
     }
@@ -153,7 +158,6 @@ function ping() {
 function tasklist() {
     return new Promise((resolve,reject) => {
         exec(`ssh jackson@192.168.1.7 tasklist`, (error, stdout, stderr) => {
-            console.log(stdout);
             resolve(stdout);
         });
     });
