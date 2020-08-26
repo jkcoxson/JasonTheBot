@@ -32,8 +32,7 @@ const commands = {
                     resolve('the server is not currently running.');
                 }
             });
-        }
-        if (args[0] === 'start') {
+        } else if (args[0] === 'start') {
             // Check if it's already running or off
             bds_running().then(running => {
                 if (running) {
@@ -44,11 +43,15 @@ const commands = {
                             resolve('the server is not powered on.')
                         } else { // Otherwise, start it
                             bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
-                            resolve('the server is now running');
+                            resolve('the server is now running.');
                         }
                     })
                 }
             });     
+        } else if (args[0] === 'stop') {
+            bedrock_console.kill();
+            bedrock_console = null;
+            resolve('server terminated.');
         }
     }),
 
@@ -104,11 +107,18 @@ client.on('message', message => {
 // Test for connection to the server. If no connection, set st variable to null etc. If there is a connection that isn't
 // expected, kill the bedrock server and start it again to maintain a connection that it manipulatable.
 setInterval(() => {
-    if (bedrock_console) {
+    if (bedrock_console !== null) {
         ping().then(running => {
             if (!running) {
                 bedrock_console.kill();
                 bedrock_console = null;
+            } else {
+                tasklist().then(tasks => {
+                    if (!tasks.includes('bedrock_server.exe')) {
+                        bedrock_console.kill();
+                        bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                    }
+                });
             }
         });
     } else {
