@@ -48,15 +48,7 @@ const commands = {
                         }
                     })
                 }
-            });
-            // Test for hardware power to avoid confusion on point of failure
-            if (!ping().then(response => console.log(response))) {
-                resolve('the hardware is currently not powered.');
-            }
-            if (bedrock_console != null) {
-                resolve('the server is already powered on.');
-            }
-     
+            });     
         }
     }),
 
