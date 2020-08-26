@@ -129,7 +129,7 @@ setInterval(() => {
         tasklist().then(tasks => {
             if (tasks.includes('bedrock_server.exe')) {
                 exec(`ssh jackson@192.168.1.7 taskkill /IM "bedrock_server.exe" /F`);
-                console.log('The BDS SSH handle that Node owns is dead, but BDS isn\'t on the computer. Killing BDS');
+                console.log('The BDS SSH handle that Node owns is dead, but BDS is running on the computer. Killing BDS');
             }
         });
     }
