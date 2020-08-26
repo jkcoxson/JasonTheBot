@@ -18,23 +18,37 @@ const minute = second*60;
 ///////////////////////////////////////////////////////
 
 // Global fun
-let bedrock_console = null;
+let bedrock_console = null; // The BDS process
 let chatbot_console = null;
-let grace_stop = true;
+let grace_stop = true; // ?
 const commands = {
     server: args => new Promise((resolve, reject) => {
         // Test for power to the server hardware.
-        if (args[0] === 'power') {
-            ping().then(response => {
-                if (response) {
-                    resolve('the server is currently powered on.');
+        if (args[0] === 'power' || args[0] === 'running') {
+            bds_running().then(running => {
+                if (running) {
+                    resolve('the server is currently running.');
                 } else {
-                    resolve('the server is not powered on. Rip.');
+                    resolve('the server is not currently running.');
                 }
             });
-
         }
         if (args[0] === 'start') {
+            // Check if it's already running or off
+            bds_running().then(running => {
+                if (running) {
+                    resolve('the server is already on.');
+                } else {
+                    ping().then(server_on => {
+                        if (!server_on) {
+                            resolve('the server is not powered on.')
+                        } else { // Otherwise, start it
+                            bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                            resolve('the server is now running');
+                        }
+                    })
+                }
+            });
             // Test for hardware power to avoid confusion on point of failure
             if (!ping().then(response => console.log(response))) {
                 resolve('the hardware is currently not powered.');
@@ -45,8 +59,6 @@ const commands = {
      
         }
     }),
-
-    tasklist: args => tasklist(),
 
     bot: args => new Promise((resolve, reject) => {
         resolve('this is a message back to the user');
@@ -99,9 +111,20 @@ client.on('message', message => {
 
 // Test for connection to the server. If no connection, set st variable to null etc. If there is a connection that isn't
 // expected, kill the bedrock server and start it again to maintain a connection that it manipulatable.
-setInterval(function(testing) {
-    if (bedrock_console != null) {
-
+setInterval(() => {
+    if (bedrock_console) {
+        ping().then(running => {
+            if (!running) {
+                bedrock_console.kill();
+                bedrock_console = null;
+            }
+        });
+    } else {
+        tasklist().then(tasks => {
+            if (tasks.includes('bedrock_server.exe')) {
+                exec(`ssh jackson@192.168.1.7 taskkill /IM "bedrock_server.exe" /F`);
+            }
+        });
     }
 }, 30 * second);
 
@@ -134,5 +157,18 @@ function tasklist() {
     });
 }
 
+function bds_running() {
+    return new Promise((resolve, reject) => {
+        ping().then(computer_on => {
+            tasklist().then(tasks => {
+                if (computer_on && tasks.includes('bedrock_server.exe')) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            });
+        });
+    });
+}
 
 client.login(config.BOT_TOKEN);
