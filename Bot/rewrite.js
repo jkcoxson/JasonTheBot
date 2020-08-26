@@ -46,7 +46,11 @@ const commands = {
         }
     }),
 
-    tasklist: args => tasklist()
+    tasklist: args => tasklist(),
+
+    bot: args => new Promise((resolve, reject) => {
+        resolve('this is a message back to the user');
+    })
 };
 
 // Return to this code when a message is sent
@@ -77,8 +81,13 @@ client.on('message', message => {
 
     // Command Library
     if (isCommand) {
-        if (commands.hasOwnProperty('command')) {
-            commands[command](args).then(response => message.reply(response));
+        console.log(command);
+        if (commands.hasOwnProperty(command)) {
+            commands[command](args).then(response => {
+                if (response) {
+                    message.reply(response);
+                }
+            });
         } else {
             message.reply('that isn\'t a command, silly.');
         }
