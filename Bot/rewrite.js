@@ -1,12 +1,12 @@
 //Import stuff so that this works I guess
-const Discord = require("discord.js");
-const config = require("./config.json");
+const Discord = require('discord.js');
+const config = require('./config.json');
 const fs = require('fs');
-const { spawn } = require("child_process");
-const { exec } = require("child_process");
-const { send, stderr, stdout } = require("process");
-const { Console } = require("console");
-const { resolve } = require("path");
+const { spawn } = require('child_process');
+const { exec } = require('child_process');
+const { send, stderr, stdout } = require('process');
+const { Console } = require('console');
+const { resolve } = require('path');
 //Make the variable to manipulate
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 const prefix = config.PREFIX
@@ -18,18 +18,44 @@ const minute = second*60;
 ///////////////////////////////////////////////////////
 
 // Global fun
-bedrock_console = null;
-chatbot_console = null;
-grace_stop = true;
+let bedrock_console = null;
+let chatbot_console = null;
+let grace_stop = true;
+const commands = {
+    server: args => new Promise((resolve, reject) => {
+        // Test for power to the server hardware.
+        if (args[0] === 'power') {
+            ping().then(response => {
+                if (response) {
+                    resolve('the server is currently powered on.');
+                } else {
+                    resolve('the server is not powered on. Rip.');
+                }
+            });
+
+        }
+        if (args[0] === 'start') {
+            // Test for hardware power to avoid confusion on point of failure
+            if (!ping().then(response => console.log(response))) {
+                resolve('the hardware is currently not powered.');
+            }
+            if (bedrock_console != null) {
+                resolve('the server is already powered on.');
+            }
+     
+        }
+    }),
+
+    tasklist: args => tasklist()
+};
 
 // Return to this code when a message is sent
-client.on("message", message => {
+client.on('message', message => {
     // console.log(message);
+    if (message.author.bot) return;
+    
     // Local data based on the message or context
     let isCommand = false;
-
-
-    if (message.author.bot) return;
 
     let command = null;
     let args = null;
@@ -51,47 +77,14 @@ client.on("message", message => {
 
     // Command Library
     if (isCommand) {
-        if (command === "server") {
-            // Test for power to the server hardware.
-            if (args[0] === "power") {
-                ping().then(response => {
-                    if (response) {
-                        message.reply("the server is currently powered on.");
-                    } else {
-                        message.reply("the server is not powered on. Rip.");
-                    }
-                });
-
-            }
-            if (args[0] === "start") {
-                //Test for hardware power to avoid confusion on point of failure
-                if (!ping().then(response => console.log(response))) {
-                    message.reply("the hardware is currently not powered.");
-                    return;
-                }
-                if (bedrock_console != null) {
-                    message.reply("the server is already powered on.");
-                    return;
-                }
-         
-            }
-
-        } else if (command === "tasklist") {
-            tasklist().then(responce => {
-                message.reply(responce);
-            });
+        if (commands.hasOwnProperty('command')) {
+            commands[command](args).then(response => message.reply(response));
+        } else {
+            message.reply('that isn\'t a command, silly.');
         }
-    }
-
-
-
-    //Test for other messages for specific applications.
-    if (!isCommand) {
+    } else { // Test for other messages for specific applications.
 
     }
-
-
-
 });
 
 
@@ -102,13 +95,6 @@ setInterval(function(testing) {
 
     }
 }, 30 * second);
-
-
-
-
-
-
-
 
 
 // Contributed by Seth. Good job.
