@@ -19,30 +19,22 @@ const minute = second*60;
 
 // Global fun
 let bedrock_console = null; // The BDS process
-let chatbot_console = null;
+let chatbot_console = null; // The Go process that does chatting
 let grace_stop = true; // ?
 const commands = {
     server: async args => {
         // Test for power to the server hardware.
         switch (args[0]) {
-            case 'power':
-                if (await ping()) {
-                    return 'the server is currently on.';
-                } else {
-                    return 'the server is not currently on.';
-                }
-                break;
-            case 'running':
+            case 'status':
                 if (await ping()) {
                     if ((await tasklist()).includes('bedrock_server.exe')) {
-                        return 'the server is currently running.';
+                        return 'the server is currently running BDS.';
                     } else {
                         return 'the server is on, but not running BDS.'
                     }
                 } else {
                     return 'the server is not currently on.'
                 }
-                break;
             case 'start':
                 // Check if it's already running or off
                 if (await bds_running()) {
@@ -56,7 +48,6 @@ const commands = {
                         return 'the server is now running.';
                     }
                 }
-                break;
             case 'stop':
                 if (bedrock_console) {
                     bedrock_console.kill();
@@ -66,44 +57,7 @@ const commands = {
                 } else {
                     return `the server isn't running anyways.`;
                 }
-                break;
         }
-
-        // if (args[0] === 'power') {
-        //     if (await ping()) {
-        //         return 'the server is currently on.';
-        //     } else {
-        //         return 'the server is not currently on.';
-        //     }
-        // } else if (args[0] === 'running') {
-        //     if (await ping()) {
-        //         if ((await tasklist()).includes('bedrock_server.exe')) {
-        //             return 'the server is currently running.';
-        //         } else {
-        //             return 'the server is on, but not running BDS.'
-        //         }
-        //     } else {
-        //         return 'the server is not currently on.'
-        //     }
-        // } else if (args[0] === 'start') {
-        //     // Check if it's already running or off
-        //     if (await bds_running()) {
-        //         return 'the server is already on.';
-        //     } else {
-        //         if (!(await ping())) {
-        //             return 'the server is not powered on.';
-        //         } else { // Otherwise, start it
-        //             bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
-        //             console.log('Starting server');
-        //             return 'the server is now running.';
-        //         }
-        //     }
-        // } else if (args[0] === 'stop') {
-        //     bedrock_console.kill();
-        //     bedrock_console = null;
-        //     console.log('Killing server');
-        //     return 'server terminated.';
-        // }
     },
 
     bot: async args => {
@@ -211,4 +165,4 @@ async function bds_running() {
     return computer_on && tasks_running.includes('bedrock_server.exe');
 }
 
-client.login(config.BOT_TOKEN);
+client.login(config.BOT_TOKEN)
