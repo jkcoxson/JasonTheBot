@@ -103,7 +103,7 @@ client.on('message', async message => {
 // expected, kill the bedrock server and start it again to maintain a connection that it manipulatable.
 setInterval(async () => {
     if (bedrock_console !== null) {
-        const [computer_on, tasks_running] = await Promise.all(ping(), tasklist());
+        const [computer_on, tasks_running] = await Promise.all([ping(), tasklist()]);
         if (!computer_on) {
             bedrock_console.kill();
             bedrock_console = null;
