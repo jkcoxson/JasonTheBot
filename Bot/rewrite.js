@@ -24,31 +24,82 @@ let grace_stop = true; // ?
 const commands = {
     server: async args => {
         // Test for power to the server hardware.
-        if (args[0] === 'power' || args[0] === 'running') {
-            if (await bds_running()) {
-                return 'the server is currently running.';
-            } else {
-                return 'the server is not currently running.';
-            }
-        } else if (args[0] === 'start') {
-            // Check if it's already running or off
-            if (await bds_running()) {
-                return 'the server is already on.';
-            } else {
-                if (!(await ping())) {
-                    return 'the server is not powered on.';
-                } else { // Otherwise, start it
-                    bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
-                    console.log('Starting server');
-                    return 'the server is now running.';
+        switch (args[0]) {
+            case 'power':
+                if (await ping()) {
+                    return 'the server is currently on.';
+                } else {
+                    return 'the server is not currently on.';
                 }
-            }
-        } else if (args[0] === 'stop') {
-            bedrock_console.kill();
-            bedrock_console = null;
-            console.log('Killing server');
-            return 'server terminated.';
+                break;
+            case 'running':
+                if (await ping()) {
+                    if ((await tasklist()).includes('bedrock_server.exe')) {
+                        return 'the server is currently running.';
+                    } else {
+                        return 'the server is on, but not running BDS.'
+                    }
+                } else {
+                    return 'the server is not currently on.'
+                }
+                break;
+            case 'start':
+                // Check if it's already running or off
+                if (await bds_running()) {
+                    return 'the server is already on.';
+                } else {
+                    if (!(await ping())) {
+                        return 'the server is not powered on.';
+                    } else { // Otherwise, start it
+                        bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                        console.log('Starting server');
+                        return 'the server is now running.';
+                    }
+                }
+                break;
+            case 'stop':
+                bedrock_console.kill();
+                bedrock_console = null;
+                console.log('Killing server');
+                return 'server terminated.';
+                break;
         }
+
+        // if (args[0] === 'power') {
+        //     if (await ping()) {
+        //         return 'the server is currently on.';
+        //     } else {
+        //         return 'the server is not currently on.';
+        //     }
+        // } else if (args[0] === 'running') {
+        //     if (await ping()) {
+        //         if ((await tasklist()).includes('bedrock_server.exe')) {
+        //             return 'the server is currently running.';
+        //         } else {
+        //             return 'the server is on, but not running BDS.'
+        //         }
+        //     } else {
+        //         return 'the server is not currently on.'
+        //     }
+        // } else if (args[0] === 'start') {
+        //     // Check if it's already running or off
+        //     if (await bds_running()) {
+        //         return 'the server is already on.';
+        //     } else {
+        //         if (!(await ping())) {
+        //             return 'the server is not powered on.';
+        //         } else { // Otherwise, start it
+        //             bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+        //             console.log('Starting server');
+        //             return 'the server is now running.';
+        //         }
+        //     }
+        // } else if (args[0] === 'stop') {
+        //     bedrock_console.kill();
+        //     bedrock_console = null;
+        //     console.log('Killing server');
+        //     return 'server terminated.';
+        // }
     },
 
     bot: async args => {
@@ -84,14 +135,14 @@ client.on('message', async message => {
 
     // Command Library
     if (isCommand) {
-        console.log(command);
+        // console.log(command);
         if (commands.hasOwnProperty(command)) {
             const response = await commands[command](args);
             if (response) {
                 message.reply(response);
             }
         } else {
-            message.reply('that isn\'t a command, silly.');
+            message.reply(`that isn't a command, silly.`);
         }
     } else { // Test for other messages for specific applications.
 
