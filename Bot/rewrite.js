@@ -58,10 +58,14 @@ const commands = {
                 }
                 break;
             case 'stop':
-                bedrock_console.kill();
-                bedrock_console = null;
-                console.log('Killing server');
-                return 'server terminated.';
+                if (bedrock_console) {
+                    bedrock_console.kill();
+                    bedrock_console = null;
+                    console.log('Killing server');
+                    return 'server terminated.';
+                } else {
+                    return `the server isn't running anyways.`;
+                }
                 break;
         }
 
