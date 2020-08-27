@@ -55,7 +55,7 @@ const commands = {
                     console.log('Killing server');
                     return 'server terminated.';
                 } else {
-                    return `the server isn't running anyways.`;
+                    return `the server wasn't running to begin with, nothing to stop.`;
                 }
         }
     },
