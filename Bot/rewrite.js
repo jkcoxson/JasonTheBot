@@ -192,8 +192,8 @@ async function bds_running() {
 setInterval(function(){
     if (date.getHours()>7 && date.getHours()<22){
         let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
-        //Testing in my personal server until confirmed working. Don't want to spam the production server.
-        client.channels.cache.get("706625332941160498").send(toSend);
+        
+        client.channels.cache.get("743322271355240492").send(toSend);
     }
     
 },60*minute);
