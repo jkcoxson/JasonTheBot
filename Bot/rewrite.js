@@ -106,7 +106,7 @@ client.on('message', async message => {
         }
     } else { // Test for other messages for specific applications.
         if (message.content.toLowerCase().includes(`good bot`)){
-            message.reply("I know I am.")
+            message.channel.send("I know I am.");
         }
     }
 });
