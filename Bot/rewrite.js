@@ -30,7 +30,7 @@ const commands = {
                     if ((await tasklist()).includes('bedrock_server.exe')) {
                         return 'the server is currently running the game server.';
                     } else {
-                        return 'the server is on, but not running game server.'
+                        return 'the server is on, but not running the game server.'
                     }
                 } else {
                     return 'the server is not currently on.'
@@ -101,7 +101,8 @@ client.on('message', async message => {
                 message.reply(response);
             }
     } else { // Test for other messages for specific applications.
-        if (message.content.toLowerCase().includes===`good bot`){
+        //console.log("Not a command, just a message.")
+        if (message.content.toLowerCase().includes(`good bot`)){
             message.reply("I know I am.")
         }
     }
