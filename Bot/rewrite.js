@@ -5,13 +5,24 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const { exec } = require('child_process');
 const { send, stderr, stdout } = require('process');
-const { Console } = require('console');
+const { Console, time } = require('console');
 const { resolve } = require('path');
+var date = new Date();
 // Make the variable to manipulate
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 const prefix = config.PREFIX
 const second = 1000;
 const minute = second*60;
+
+//This is where all the bot replies will be parsed and read in. 
+var random
+fs.readFile('random.txt', 'utf8' , (err, data) => {
+    if (err) {
+      console.error(err)
+      return
+    }
+    random=data.split("\n");
+  })
 
 ///////////////////////////////////////////////////////
 /// Jackson's Discord Bot, but this time, he's mad! ///
@@ -64,6 +75,12 @@ const commands = {
 
     bot: async args => {
         return 'this is a message back to the user';
+    },
+    //Test command to be removed once functionality has been confirmed.
+    random: async args =>{
+        let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
+        //Testing in my personal server until confirmed working. Don't want to spam the production server.
+        client.channels.cache.get("706625332941160498").send(toSend);
     }
 };
 
@@ -168,5 +185,18 @@ async function bds_running() {
     const [computer_on, tasks_running] = await Promise.all([ping(), tasklist()]);
     return computer_on && tasks_running.includes('bedrock_server.exe');
 }
+
+
+//Spit out random words for kicks. TODO: Import random.txt, choose a random word, and say something every 3 hours between
+//8 AM and 9 PM
+setInterval(function(){
+    if (date.getHours()>7 && date.getHours()<22){
+        let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
+        //Testing in my personal server until confirmed working. Don't want to spam the production server.
+        client.channels.cache.get("706625332941160498").send(toSend);
+    }
+    
+},60*minute);
+
 
 client.login(config.BOT_TOKEN)
