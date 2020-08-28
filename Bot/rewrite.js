@@ -28,9 +28,9 @@ const commands = {
             case 'status':
                 if (await ping()) {
                     if ((await tasklist()).includes('bedrock_server.exe')) {
-                        return 'the server is currently running BDS.';
+                        return 'the server is currently running the game server.';
                     } else {
-                        return 'the server is on, but not running BDS.'
+                        return 'the server is on, but not running game server.'
                     }
                 } else {
                     return 'the server is not currently on.'
@@ -101,7 +101,9 @@ client.on('message', async message => {
                 message.reply(response);
             }
     } else { // Test for other messages for specific applications.
-
+        if (message.content.toLowerCase().includes===`good bot`){
+            message.reply("I know I am.")
+        }
     }
 });
 
