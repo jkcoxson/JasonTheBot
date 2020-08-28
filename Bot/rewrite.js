@@ -95,13 +95,16 @@ client.on('message', async message => {
 
     // Command Library
     if (isCommand) {
-        // console.log(command);
-        const response = await commands[command](args);
+        if (commands.hasOwnProperty(command)) {
+            const response = await commands[command](args);
+            
             if (response) {
                 message.reply(response);
             }
+        } else {
+            message.reply(`that's not a command you silly goose!`);
+        }
     } else { // Test for other messages for specific applications.
-        //console.log("Not a command, just a message.")
         if (message.content.toLowerCase().includes(`good bot`)){
             message.reply("I know I am.")
         }
