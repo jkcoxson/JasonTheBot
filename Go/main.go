@@ -14,6 +14,7 @@ import (
 
 var SendAvailable = false
 var ToSend = ""
+var garbagecollector = ""
 
 func main() {
 	go Minecraft()
@@ -47,7 +48,7 @@ func Minecraft() {
 		if text, ok := pk.(*packet.Text); ok {
 			fmt.Printf("%#v\n", pk)
 			fmt.Println()
-
+			text = text
 		}
 		if SendAvailable {
 			conn.WritePacket(&packet.Text{
