@@ -32,20 +32,20 @@ func Minecraft() {
 			DisplayName: "JasonTheBot",
 			Identity:    uuid.New().String(),
 		},
-	}.Dial("raknet", "67.199.177.214:19134")
+	}.Dial("raknet", "67.199.177.214:19136")
 	if err != nil {
 		panic(err)
 	}
 	// Make the client spawn in the world.
-	if err := conn.DoSpawn(); err != nil {
-		panic(err)
-	}
+	// if err := conn.DoSpawn(); err != nil {
+	// 	panic(err)
+	// }
 	defer conn.Close()
 	for {
 		// Example: Read a packet from the connection.
 		pk, err := conn.ReadPacket()
 		if text, ok := pk.(*packet.Text); ok {
-			fmt.Println(text)
+			fmt.Printf("%#v\n", pk)
 			fmt.Println()
 
 		}
