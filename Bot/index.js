@@ -1,315 +1,202 @@
-//Import stuff so that this works I guess
-const Discord = require("discord.js");
-const config = require("./config.json");
+// Import stuff so that this works I guess
+const Discord = require('discord.js');
+const config = require('./config.json');
 const fs = require('fs');
-const { spawn } = require("child_process");
-const { exec } = require("child_process");
-const { send } = require("process");
-//Make the variable to manipulate
+const { spawn } = require('child_process');
+const { exec } = require('child_process');
+const { send, stderr, stdout } = require('process');
+const { Console, time } = require('console');
+const { resolve } = require('path');
+var date = new Date();
+// Make the variable to manipulate
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 const prefix = config.PREFIX
-//Create the on functions so that if something happens it will catch
-let bedrock = null;
-let running = false;
-let buffalo = null;
-//Check for a message sent
-client.on("message", function(message) {
-    //Stop if a bot 
-    if (message.author.bot) return;  
-    //Test if message doesn't start with prefix
-    if (!message.content.startsWith(prefix)){
-        if (!message.channel.id==="744680352412467200"){
-            console.log(message.channel.id)
-            return;
-            
-        }else{
-            console.log("Good")
-            tosend=""
-            tryname=message.member.toString().substr(1).substr(1);
-            twoname=tryname.substr(0,tryname.length-1);
-            
-            if (twoname==="533530255172829184"){
-                twoname="Jackson";
-            }
-            if (twoname==="456290281592193036"){
-                twoname="Platinum48";
-            }
-            if (twoname==="359388294527582208"){
-                twoname="Hayden";
-            }
-            if (twoname==="743467223548690453"){
-                twoname="Howard";
-            }
-            if (twoname==="743467223548690453"){
-                twoname="Josh"
-            }
-            tosend+=twoname;
-            tosend+=": "
-            tosend+=message.content
-            console.log(tosend)
-            buffalo.stdin.write(tosend);
-            buffalo.stdin.write("\n");
-        }
+const second = 1000;
+const minute = second*60;
+
+//This is where all the bot replies will be parsed and read in. 
+var random
+fs.readFile('random.txt', 'utf8' , (err, data) => {
+    if (err) {
+      console.error(err)
+      return
     }
-    //Parse the message
-    const commandBody = message.content.slice(prefix.length); //Remove the prefix
-    const args = commandBody.split(' '); //Split the message into array
-    var command = args.shift().toLowerCase(); //Remove first (command) and lower all 
-    
-    //Start actual command stuff
+    random=data.split("\n");
+  })
 
-    
+///////////////////////////////////////////////////////
+/// Jackson's Discord Bot, but this time, he's mad! ///
+///////////////////////////////////////////////////////
 
-    if (command === "ping"){
-        message.reply("stop, I'm trying to sleep.")
-    }
-
-
-
-
-
-
-
-    if (command === "server"){
-        if (args[0]==="power"){
-            exec("ping 192.168.1.7 -c 1", (error, stdout, stderr) => {
-                if (error) {
-                    message.reply("server is not powered on. Rip. Code 0.")
-                    return;
-                }
-                if (stderr) {
-                    message.reply("server is not powered on. Rip. Code 1.")
-                    return;
-                }
-                message.reply("server is currently powered on!")
-            });
-        }
-        if (args[0]==="start"){
-            if (running===false){
-                message.reply("attemping to start server software");
-                bedrock = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
-                bedrock.stdout.setEncoding("utf-8");
-                bedrock.stdin.setEncoding("utf-8");
-                bedrock.stdout.on("readable", function(){
-                    let data;
-                    while(data=this.read()){
-                        console.log(data);
-                        fs.appendFile('bot.log', data, function (err) {
-                            if (err) throw err;
-                            //console.log('Saved!');
-                          });
-                        if (data.search("Server started.")!==-1){
-                            message.reply("server started successfully!");
-                            running=true;
-                        }
-                        if (data.search("Quit correctly")!==-1){
-                            message.reply("server terminated.");
-                            running=false;
-                        }
+// Global fun
+let bedrock_console = null; // The BDS process
+let chatbot_console = null; // The Go process that does chatting
+let grace_stop = true; // ?
+const commands = {
+    server: async args => {
+        // Test for power to the server hardware.
+        switch (args[0]) {
+            case 'status':
+                if (await ping()) {
+                    if ((await tasklist()).includes('bedrock_server.exe')) {
+                        return 'the server is currently running the game server.';
+                    } else {
+                        return 'the server is on, but not running the game server.'
                     }
-                    
-                });
-                
-            }else{
-                message.reply("it's already running, silly!");
-            }
-            
-            command="go";
+                } else {
+                    return 'the server is not currently on.'
+                }
+            case 'start':
+                // Check if it's already running or off
+                if (await bds_running()) {
+                    return 'the server is already on.';
+                } else {
+                    if (!(await ping())) {
+                        return 'the server is not powered on.';
+                    } else { // Otherwise, start it
+                        bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                        console.log('Starting server');
+                        return 'the server is now running.';
+                    }
+                }
+            case 'stop':
+                if (bedrock_console) {
+                    bedrock_console.kill();
+                    bedrock_console = null;
+                    console.log('Killing server');
+                    return 'server terminated.';
+                } else {
+                    return `the server wasn't running to begin with, nothing to stop.`;
+                }
+            default:
+                return `that's not a command you silly goose!`
         }
-        if (args[0]==="stop"){
-            
-            bedrock.stdin.write("stop\n");
-            spawn(`ssh`,[`open@192.168.1.40`,`pkill`,`main`]);
-            
-        }
-        if (args[0]==="force"){
-            if (args[1]==="stop"){
-                running=false;
-                bedrock=null;
-                spawn(`ssh`,[`jackson@192.168.1.7`,`taskkill`, `/IM`, `"bedrock_server.exe"`, `/F`])
-                message.reply("this was a last ditch effort to kill the server. There is no way to make sure this worked, try not to use this command. It also can corrupt the world, so...")
-                spawn(`ssh`,[`open@192.168.1.40`,`pkill`,`main`]);
-            }
-        }
-    }
+    },
 
-    if (command==="role"){
+    bot: async args => {
+        return 'this is a message back to the user';
+    },
+    //Test command to be removed once functionality has been confirmed.
+    random: async args =>{
+        let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
+        //Testing in my personal server until confirmed working. Don't want to spam the production server.
+        client.channels.cache.get("706625332941160498").send(toSend);
+    }
+};
+
+// Return to this code when a message is sent
+client.on('message', async message => {
+    // console.log(message);
+    if (message.author.bot) return;
+    
+    // Local data based on the message or context
+    let isCommand = false;
+
+    let command = null;
+    let args = null;
+
+    if (message.content.startsWith(prefix)) {
+        isCommand = true; // Let program know it's a command being run
+
+        const commandBody = message.content.slice(prefix.length); // Remove the prefix
+
+        args = commandBody.split(' '); // Split the message into array
         
-        let role = message.guild.roles.cache.find(r => r.name === args[0]);
-        message.member.roles.add(role);
+        command = args.shift().toLowerCase(); // Remove first from command and lower all 
     }
 
-    if (command==="unrole"){
-        
-        let role = message.guild.roles.cache.find(r => r.name === args[0]);
-        message.member.roles.remove(role);
-    }
 
-    if (command==="react"){
-        message.delete();
-        message.channel.send("React to this message to get a role that will allow others to notify you when they want to play a certain game for example @minecraft.")
-    }
-
-    if (command==="konsole"){
-        let mycommand = ""
-        for (var i =0; i<args.length; i++){
-            mycommand+=args[i];
-            mycommand+=" ";
-        }
-        bedrock.stdin.write(mycommand);
-        bedrock.stdin.write("\n")
-    }
-    
-    if (command==="go"){
-        spawn(`ssh`,[`open@192.168.1.40`,`pkill`,`main`]);
-        message.reply("starting chat helper bot.")
-        buffalo=spawn(`ssh`,[`open@192.168.1.40`,`/usr/local/go/bin/go`,`run`,`/home/open/Documents/Go/main.go`]);
-        //buffalo.stdin.setEncoding("utf-8");
-        buffalo.stdout.setEncoding("utf-8");
-        buffalo.stdout.on("readable",function(){
-            //This is where chat comes from
-            let data;
-    
-            while(data=this.read()){
-                
-                console.log(data)
-                
-                //Start parsing files
-                
-                if(data[2]==='1'&&data[3]!=='0'){
-                    let sender="";
-                    let chopped=[];
-                    let finale ="";
-                    //Chat packet
-                    //onsole.log("Chat");
-                    data = data.substr(1);
-                    //console.log(data)
-                    data = data.substr(1);
-                    //console.log(data)
-                    data = data.substr(1);
-                    //console.log(data)
-                    data = data.substr(1);
-                    //console.log(data)
-                    chopped=data.split(' ');
-                    chopped.shift();
-                    sender = chopped.shift();
-                    //console.log(chopped)
-                    let found = false
-                    while (!found){
-                        if (chopped[chopped.length-1].includes("[")){
-                            chopped.pop();
-                            //onsole.log(chopped)
-                            finale=chopped.join(" ");
-                            found=true
-                        }else{
-                            chopped.pop();
-                            //console.log(chopped)
-                            //console.log("Poppy");
-                        }
-                    }
-                    let mymessage = `${sender}: ${finale}`
-                    console.log(mymessage)
-                    notbot=true;
-                    if(mymessage.split(" ")[0]==="JasonTheBot"){
-                        notbot=false;
-                    }
-                    if(mymessage.split(" ")[0]==="JasonTheBot:"){
-                        notbot=false
-                    }
-                    if(notbot){
-                        client.channels.cache.get("744680352412467200").send(mymessage);
-                    }
-                    
-                }
-
-                if(data[2]==='2'){
-                    chopped=data.split(" ");
-                    sender=chopped[2];
-                    if (sender.length<2){
-                        //console.log("Enter fix mode")
-                        sender=chopped[4]
-                        //console.log(sender)
-                        sender=sender.substr(1);
-                        //console.log(sender)
-                        console.log(sender[sender.length-1])
-                        if (sender[sender.length-1]==="]"){
-                            sender=sender.substr(0,sender.length-1);
-                        }
-                        
-                        //console.log(sender)
-                    }
-                    if (chopped[3].includes("player.left")){
-                        client.channels.cache.get("744680352412467200").send(`${sender} left the game.`)
-                    }
-                    if (chopped[3].includes("player.joined")){
-                        client.channels.cache.get("744680352412467200").send(`${sender} joined the game.`)
-                    }
-                    if (chopped[3].includes("death")){
-                        client.channels.cache.get("744680352412467200").send(`${sender} died. Rip.`)
-                    }
-
-                }
-                
+    // Replies must start with lower case, as Discord.js formats
+    // replies as @User, ${message}.
 
 
+    // Command Library
+    if (isCommand) {
+        if (commands.hasOwnProperty(command)) {
+            const response = await commands[command](args);
+            
+            if (response) {
+                message.reply(response);
             }
-    
-    
-    
+        } else {
+            message.reply(`that's not a command you silly goose!`);
+        }
+    } else { // Test for other messages for specific applications.
+        if (message.content.toLowerCase().includes(`good bot`)){
+            message.channel.send("I know I am.");
+        }
+    }
+});
+
+
+// Test for connection to the server. If no connection, set st variable to null etc. If there is a connection that isn't
+// expected, kill the bedrock server and start it again to maintain a connection that it manipulatable.
+setInterval(async () => {
+    if (bedrock_console !== null) {
+        const [computer_on, tasks_running] = await Promise.all([ping(), tasklist()]);
+        if (!computer_on) {
+            bedrock_console.kill();
+            bedrock_console = null;
+            console.log('The computer is not on, killing the SSH BDS process in Node');
+        } else {
+            if (!tasks_running.includes('bedrock_server.exe')) {
+                bedrock_console.kill();
+                bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
+            }
+        }
+    } else {
+        if ((await tasklist()).includes('bedrock_server.exe')) {
+            exec(`ssh jackson@192.168.1.7 taskkill /IM "bedrock_server.exe" /F`);
+            console.log('The BDS SSH handle that Node owns is dead, but BDS is running on the computer. Killing BDS');
+        }
+    }
+}, 30 * second);
+
+
+// Contributed by Seth. Good job.
+// Test if a connection can be made to the server hardware. Run using:
+// ping().then(response=>console.log(response))
+// to return a true or false.
+function ping() {
+    return new Promise((resolve, reject) => {
+        exec(`ping 192.168.1.7 -c 1`, (error, stdout, stderr) => {
+            if (error) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
         });
-    }
-    if (command === "killgo"){
-        spawn(`ssh`,[`open@192.168.1.40`,`pkill`,`main`]);
-    }
+    });
+}
+// Seth is pretty smart 
 
 
-
-
-    
-});
-
-
-client.on("ready", function(){
-    
-});
-
-client.on("stop", function(){
-    console.log("Shutting down")
-});
-
-
-
-
-
-client.on("messageReactionAdd",function(reaction,user){
-    
-    let message = reaction.message
-    let emoji = reaction.emoji;
-    if (message.id==="743710929602216026"){
-        console.log(emoji.name);
-        if(emoji.name==="minecraft"){
-            let role = message.guild.roles.cache.find(r => r.name === "Minecraft");
-            
-            reaction.message.guild.member(user).roles.add(role);
-        }
-
-        if(emoji.name==="smashbros"){
-            let role = message.guild.roles.cache.find(r => r.name === "Super Smash Bros.");
-            
-            reaction.message.guild.member(user).roles.add(role);
-        }
-        if(emoji.name==="emoji_3"){
-            let role = message.guild.roles.cache.find(r => r.name === "stardew valley");
-            
-            reaction.message.guild.member(user).roles.add(role);
-        }
-    }
-
-});
-
-
-function fetchem(ID,client,message){
-    await 
+// List tasks running on Jackson's computer
+function tasklist() {
+    return new Promise((resolve, reject) => {
+        exec(`ssh jackson@192.168.1.7 tasklist`, (error, stdout, stderr) => {
+            resolve(stdout);
+        });
+    });
 }
 
-client.login(config.BOT_TOKEN);
+async function bds_running() {
+    const [computer_on, tasks_running] = await Promise.all([ping(), tasklist()]);
+    return computer_on && tasks_running.includes('bedrock_server.exe');
+}
+
+
+//Spit out random words for kicks. TODO: Import random.txt, choose a random word, and say something every 3 hours between
+//8 AM and 9 PM
+setInterval(function(){
+    if (date.getHours()>7 && date.getHours()<22){
+        let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
+        
+        client.channels.cache.get("743322271355240492").send(toSend);
+    }
+    
+},60*minute);
+
+
+client.login(config.BOT_TOKEN)
