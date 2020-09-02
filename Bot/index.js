@@ -31,7 +31,7 @@ fs.readFile('random.txt', 'utf8' , (err, data) => {
 // Global fun
 const bedrock_server = require('./server.js').bedrock_server;
 
-bedrock_server.on('start', () => {
+bedrock_server.addListener('start', () => {
     chatbot_console = spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`]);
 });
 
