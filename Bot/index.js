@@ -7,13 +7,32 @@ const { exec } = require('child_process');
 const { send, stderr, stdout } = require('process');
 const { Console, time } = require('console');
 const { resolve } = require('path');
-const bedrock_server = require('server.js').bedrock_server;
 var date = new Date();
 // Make the variable to manipulate
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 const prefix = config.PREFIX
 const second = 1000;
 const minute = second*60;
+
+const bedrock_server = require('server.js').bedrock_server;
+
+bedrock_server.on('start', () => {
+    chatbot_console = spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`]);
+});
+
+bedrock_server.on('bot-join', bot_joined => {
+    if (bot_joined === 'JasonTheBot') {
+    }
+});
+
+bedrock_server.on('bot-leave', bot_left => {
+    if (bot_left === "JasonTheBot") {
+        // If the bot gets disconnected for whatever reason, kill it and try again.
+        chatbot_console.kill()
+        chatbot_console=spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
+        
+    }
+});
 
 //This is where all the bot replies will be parsed and read in. 
 var random;
@@ -102,34 +121,5 @@ setInterval(function(){
     }
     
 }, 60 * minute);
-
-
-
-function GoSubwaySandwich() {
-    chatbot_console=null
-    chatbot_console=spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
-    bedrock.stdout.on("readable", function(){
-        let data;
-        while(data=this.read()){
-            console.log(data);
-            fs.appendFile('bot.log', data, function (err) {
-                if (err) throw err;
-              });
-            if (data.search("Player connected: JasonTheBot, xuid:")!==-1){
-                //Jason connected
-                //I guess this could be handy to make sure.
-                //I don't know, I'm not a software engineer. ¯\_(ツ)_/¯
-            }
-            if (data.search("Player disconnected: JasonTheBot, xuid:")!==-1){
-                //If the bot gets disconnected for whatever reason, kill it and try again.
-                chatbot_console.kill()
-                chatbot_console=null
-                chatbot_console=spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
-            }
-        }
-        
-    });
-}
-
 
 client.login(config.BOT_TOKEN);
