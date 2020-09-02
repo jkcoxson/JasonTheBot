@@ -216,6 +216,4 @@ class bedrock_server extends EventEmitter {
     }
 }
 
-module.exports = {
-    bedrock_server: bedrock_server
-};
+module.exports = bedrock_server;
