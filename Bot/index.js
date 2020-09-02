@@ -14,6 +14,21 @@ const prefix = config.PREFIX
 const second = 1000;
 const minute = second*60;
 
+//This is where all the bot replies will be parsed and read in. 
+var random;
+fs.readFile('random.txt', 'utf8' , (err, data) => {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    random=data.split("\n");
+});
+
+///////////////////////////////////////////////////////
+/// Jackson's Discord Bot, but this time, he's mad! ///
+///////////////////////////////////////////////////////
+
+// Global fun
 const bedrock_server = require('server.js').bedrock_server;
 
 bedrock_server.on('start', () => {
@@ -34,22 +49,6 @@ bedrock_server.on('bot-leave', bot_left => {
     }
 });
 
-//This is where all the bot replies will be parsed and read in. 
-var random;
-fs.readFile('random.txt', 'utf8' , (err, data) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    random=data.split("\n");
-});
-
-///////////////////////////////////////////////////////
-/// Jackson's Discord Bot, but this time, he's mad! ///
-///////////////////////////////////////////////////////
-
-// Global fun
-const bedrock_server = new bedrock_server(); // The BDS process
 let chatbot_console = null; // The Go process that does chatting
 let grace_stop = true; // ?
 const commands = {
