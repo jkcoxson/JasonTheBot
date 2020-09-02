@@ -55,6 +55,7 @@ const commands = {
                         return 'the server is not powered on.';
                     } else { // Otherwise, start it
                         bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                        GoSubwaySandwich();
                         console.log('Starting server');
                         return 'the server is now running.';
                     }
@@ -142,6 +143,7 @@ setInterval(async () => {
             if (!tasks_running.includes('bedrock_server.exe')) {
                 bedrock_console.kill();
                 bedrock_console = spawn(`ssh`, [`jackson@192.168.1.7`, `"c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe"`]);
+                GoSubwaySandwich();
                 console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
             }
         }
@@ -197,6 +199,34 @@ setInterval(function(){
     }
     
 },60*minute);
+
+
+
+function GoSubwaySandwich(){
+    chatbot_console=null
+    chatbot_console=spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
+    bedrock.stdout.on("readable", function(){
+        let data;
+        while(data=this.read()){
+            console.log(data);
+            fs.appendFile('bot.log', data, function (err) {
+                if (err) throw err;
+              });
+            if (data.search("Player connected: JasonTheBot, xuid:")!==-1){
+                //Jason connected
+                //I guess this could be handy to make sure.
+                //I don't know, I'm not a software engineer. ¯\_(ツ)_/¯
+            }
+            if (data.search("Player disconnected: JasonTheBot, xuid:")!==-1){
+                //If the bot gets disconnected for whatever reason, kill it and try again.
+                chatbot_console.kill()
+                chatbot_console=null
+                chatbot_console=spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
+            }
+        }
+        
+    });
+}
 
 
 client.login(config.BOT_TOKEN)
