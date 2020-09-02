@@ -2,7 +2,7 @@ const child_process = require('child_process');
 const path = require('path');
 const EventEmitter = require('events');
 const net = require('net');
-const config = require('bedrock_server.config.json');
+const config = require('./bedrock_server.config.json');
 
 const port = 8080;
 
