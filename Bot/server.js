@@ -1,14 +1,14 @@
 const child_process = require('child_process');
 const path = require('path');
+const EventEmitter = require('events');
 
-class bedrock_server {
+class bedrock_server extends EventEmitter {
     #BDS_process;
     #server_ip;
     #ssh_user;
     #program_path;
     #successful_start;
     #successful_quit;
-    #event_listeners;
 
     members;
     bots;
@@ -70,11 +70,31 @@ class bedrock_server {
                 this.#BDS_process.stdout.on('data', data => {
                     if (data.includes('Server started')) {
                         this.#successful_start = true;
+                        this.emit('start');
                     } else if (data.includes(`can't start server`)) {
                         this.#successful_start = false;
                         this.stop();
                     } else if (data.includes('Quit correctly')) {
                         this.#successful_quit = true;
+                        this.emit('stop');
+                    } else if (data.includes('Player connected:')) {
+                        const player = data.match(/Player connected: (.+), xuid: .+$/)[1];
+                        if (/bot/i.test(player)) {
+                            this.bots.push(player);
+                            this.emit('bot-join', player);
+                        } else {
+                            this.members.push(player);
+                            this.emit('player-join', player);
+                        }
+                    } else if (data.includes('Player disconnected:')) {
+                        const player = data.match(/Player disconnected: (.+), xuid: .+$/)[1];
+                        if (/bot/i.test(player)) {
+                            this.bots.splice(this.members.indexOf(player), 1);
+                            this.emit('bot-leave', player);
+                        } else {
+                            this.members.splice(this.members.indexOf(player), 1);
+                            this.emit('player-leave', player);
+                        }
                     }
                 });
 
