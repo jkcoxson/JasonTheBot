@@ -140,3 +140,7 @@ class bedrock_server extends EventEmitter {
         this.#BDS_process.write(`${content}\n`);
     }
 }
+
+module.exports = {
+    bedrock_server: bedrock_server
+};
