@@ -163,6 +163,55 @@ class bedrock_server extends EventEmitter {
     write(content) {
         this.#BDS_process.write(`${content}\n`);
     }
+
+    async command(args, message) {
+        switch (args[0]) {
+            case 'status':
+                if (await this.computer_on()) {
+                    if (await this.BDS_running()) {
+                        return 'the server is currently running the game server.';
+                    } else {
+                        return 'the server is on, but not running the game server.';
+                    }
+                } else {
+                    return 'the server is not currently on.';
+                }
+            case 'start':
+                if (!(await this.computer_on())) {
+                    return 'the server is not powered on.';
+                } else {
+                    if (await this.BDS_running()) {
+                        return 'the game server is already running.';
+                    } else {
+                        message.reply('attempting to start the server.');
+                        if (await this.start()) {
+                            return 'the server is now running.';
+                        } else {
+                            return `the server didn't start successfully.`;
+                        }
+                    }
+                    
+                }
+            case 'stop':
+                if (!(await this.computer_on())) {
+                    return `the server isn't powered on to begin with.`;
+                } else {
+                    if (!(await this.BDS_running())) {
+                        return `the game server isn't running anyways.`;
+                    } else {
+                        message.reply('attempting to stop the server.');
+                        if (await this.stop()) {
+                            return 'the server is now stopped.';
+                        } else {
+                            return `the server didn't stop successfully.`;
+                        }
+                    }
+                    
+                }
+            default:
+                return `that's not a command you silly goose!`
+        }
+    }
 }
 
 module.exports = {
