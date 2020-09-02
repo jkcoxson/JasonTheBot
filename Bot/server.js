@@ -1,10 +1,14 @@
 const child_process = require('child_process');
 const path = require('path');
 const EventEmitter = require('events');
+const net = require('net');
 const config = require('bedrock_server.config.json');
+
+const port = 8080;
 
 class bedrock_server extends EventEmitter {
     #BDS_process;
+    #tcp_server;
     #server_ip;
     #ssh_user;
     #program_path;
@@ -61,6 +65,24 @@ class bedrock_server extends EventEmitter {
         });
     }
 
+    start_TCP_server() {
+        this.#tcp_server = net.createServer();
+        server.on('connection', socket => {
+            socket.pipe(this.#BDS_process.stdin);
+            this.#BDS_process.stdout.pipe(socket);
+            socket.on('error', error => {
+                socket.end();
+            });
+            this.#BDS_process.on('exit', (code, signal) => {
+                socket.end();
+            })
+        });
+        this.#BDS_process.on('exit', (code, signal) => {
+            server.close();
+        });
+        server.listen(port);
+    }
+
     start() {
         return new Promise((resolve, reject) => {
             if (!this.#BDS_process) {
@@ -98,6 +120,8 @@ class bedrock_server extends EventEmitter {
                         }
                     }
                 });
+
+                this.start_TCP_server();
 
                 // Wait to see if it sucessfully starts
                 const interval = setInterval(() => {
