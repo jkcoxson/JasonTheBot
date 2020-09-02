@@ -1,6 +1,7 @@
 const child_process = require('child_process');
 const path = require('path');
 const EventEmitter = require('events');
+const config = require('bedrock_server.config.json');
 
 class bedrock_server extends EventEmitter {
     #BDS_process;
@@ -13,10 +14,10 @@ class bedrock_server extends EventEmitter {
     members;
     bots;
 
-    constructor(server_ip, ssh_user, bedrock_process_path) {
-        this.#server_ip = server_ip;
-        this.#ssh_user = ssh_user;
-        this.#program_path = bedrock_process_path;
+    constructor() {
+        this.#server_ip = config.server_ip;
+        this.#ssh_user = config.ssh_user;
+        this.#program_path = config.bedrock_process_path;
 
         setInterval(async () => {
             if (this.#BDS_process) {
