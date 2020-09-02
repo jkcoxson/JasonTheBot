@@ -1,0 +1,121 @@
+const child_process = require('child_process');
+const path = require('path');
+
+class bedrock_server {
+    #BDS_process;
+    #server_ip;
+    #ssh_user;
+    #program_path;
+    #successful_start;
+    #successful_quit;
+    #event_listeners;
+
+    members;
+    bots;
+
+    constructor(server_ip, ssh_user, bedrock_process_path) {
+        this.#server_ip = server_ip;
+        this.#ssh_user = ssh_user;
+        this.#program_path = bedrock_process_path;
+
+        setInterval(async () => {
+            if (this.#BDS_process) {
+                const [computer_on, BDS_running] = await Promise.all([this.computer_on(), this.BDS_running()]);
+                if (!computer_on) {
+                    this.stop();
+                    console.log('The computer is not on, killing the SSH BDS process in Node');
+                } else {
+                    if (!tasks_running.includes('bedrock_server.exe')) {
+                        this.#BDS_process.kill();
+                        this.start();
+                        console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
+                    }
+                }
+            } else {
+                if (await this.BDS_running()) {
+                    exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                    console.log('The BDS SSH handle that Node owns is dead, but BDS is running on the computer. Killing BDS');
+                }
+            }
+        }, 30000);
+    }
+
+    computer_on() {
+        return new Promise((resolve, reject) => {
+            child_process.exec(`ping ${this.#server_ip} -c 1`, (error, stdout, stderr) => {
+                if (error) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    BDS_running() {
+        return new Promise((resolve, reject) => {
+            child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} tasklist`, (error, stdout, stderr) => {
+                resolve(stdout.includes(path.basename(this.#program_path)));
+            });
+        });
+    }
+
+    start() {
+        return new Promise((resolve, reject) => {
+            if (!this.#BDS_process) {
+                // Create BDS process
+                this.#BDS_process = spawn(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `"${this.#program_path}"`]);
+                this.#BDS_process.stdin.setEncoding('utf8');
+                this.#BDS_process.stdout.setEncoding('utf8');
+                this.#BDS_process.stdout.on('data', data => {
+                    if (data.includes('Server started')) {
+                        this.#successful_start = true;
+                    } else if (data.includes(`can't start server`)) {
+                        this.#successful_start = false;
+                        this.stop();
+                    } else if (data.includes('Quit correctly')) {
+                        this.#successful_quit = true;
+                    }
+                });
+
+                // Wait to see if it sucessfully starts
+                const interval = setInterval(() => {
+                    if (this.#successful_start !== null) {
+                        clearInterval(interval);
+                        const successful_start_to_return = this.#successful_start;
+                        this.#successful_start = null;
+                        return resolve(successful_start_to_return);
+                    }
+                }, 50);
+            } else {
+                return resolve(true);
+            }
+        });
+    }
+
+    stop() {
+        return new Promise((resolve, reject) => {
+            if (this.#BDS_process) {
+                this.write('stop');
+
+                // Wait to see if it successfully stops
+                const interval = setInterval(() => {
+                    if (this.#successful_quit !== null) {
+                        clearInterval(interval);
+                        const successful_quit_to_return = this.#successful_quit;
+                        this.#successful_quit = null;
+                        this.#BDS_process.kill();
+                        this.#BDS_process = null;
+                        return resolve(successful_quit_to_return);
+                    }
+                }, 50);
+            } else {
+                return resolve(true);
+            }
+        })
+    }
+
+    write(content) {
+        this.#BDS_process.write(`${content}\n`);
+    }
+}
