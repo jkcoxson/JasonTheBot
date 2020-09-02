@@ -19,6 +19,8 @@ class bedrock_server extends EventEmitter {
     bots;
 
     constructor() {
+        super();
+
         this.#server_ip = config.server_ip;
         this.#ssh_user = config.ssh_user;
         this.#program_path = config.bedrock_process_path;
