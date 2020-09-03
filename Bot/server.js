@@ -4,9 +4,9 @@ const { EventEmitter } = require('events');
 const net = require('net');
 const config = require('./bedrock_server.config.json');
 
-const port = 8080;
+const port = 12345;
 
-class bedrock_server extends EventEmitter {
+module.exports = class bedrock_server extends EventEmitter {
     #BDS_process;
     #tcp_server;
     #server_ip;
@@ -215,5 +215,3 @@ class bedrock_server extends EventEmitter {
         }
     }
 }
-
-module.exports = bedrock_server;
