@@ -204,9 +204,11 @@ module.exports = class bedrock_server extends EventEmitter {
                         return `the game server isn't running anyways.`;
                     } else {
                         message.reply('attempting to stop the server.');
-                        if (await this.stop()) {
+                        const stop_worked = await this.stop();
+                        if (stop_worked) {
                             return 'the server is now stopped.';
                         } else {
+                            console.log(stop_worked);
                             return `the server didn't stop successfully.`;
                         }
                     }
