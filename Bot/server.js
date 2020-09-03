@@ -33,7 +33,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     this.stop();
                     console.log('The computer is not on, killing the SSH BDS process in Node');
                 } else {
-                    if (!tasks_running.includes('bedrock_server.exe')) {
+                    if (!BDS_running) {
                         this.#BDS_process.kill();
                         this.start();
                         console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
@@ -164,7 +164,7 @@ module.exports = class bedrock_server extends EventEmitter {
     }
 
     write(content) {
-        this.#BDS_process.write(`${content}\n`);
+        this.#BDS_process.stdin.write(`${content}\n`);
     }
 
     async command(args, message) {
