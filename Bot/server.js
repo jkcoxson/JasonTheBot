@@ -90,7 +90,7 @@ module.exports = class bedrock_server extends EventEmitter {
         return new Promise((resolve, reject) => {
             if (!this.#BDS_process) {
                 // Create BDS process
-                this.#BDS_process = spawn(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `"${this.#program_path}"`]);
+                this.#BDS_process = child_process.spawn(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `"${this.#program_path}"`]);
                 this.#BDS_process.stdin.setEncoding('utf8');
                 this.#BDS_process.stdout.setEncoding('utf8');
                 this.#BDS_process.stdout.on('data', data => {
