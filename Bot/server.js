@@ -111,7 +111,7 @@ module.exports = class bedrock_server extends EventEmitter {
                             this.emit('player-join', player);
                         }
                     } else if (data.includes('Player disconnected:')) {
-                        const player = data.match(/Player disconnected: (.+), xuid: .+$/)[1];
+                        const player = data.match(/Player disconnected: (.+), xuid: .*/)[1];
                         if (/bot/i.test(player)) {
                             this.bots.splice(this.members.indexOf(player), 1);
                             this.emit('bot-leave', player);
