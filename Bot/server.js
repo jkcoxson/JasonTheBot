@@ -123,7 +123,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 });
 
                 // Wait to see if it sucessfully starts
-                this.on('start-status', successful_start => {
+                this.once('start-status', successful_start => {
                     resolve(successful_start);
                     if (successful_start) {
                         this.emit('start');
@@ -144,7 +144,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 this.write('stop');
 
                 // Wait to see if it successfully stops
-                this.on('stop-status', successful_stop => {
+                this.once('stop-status', successful_stop => {
                     resolve(successful_stop);
                     if (successful_stop) {
                         this.#BDS_process.kill();
