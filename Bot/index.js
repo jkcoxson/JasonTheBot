@@ -33,10 +33,12 @@ const bedrock_server = new (require('./server.js'))();
 
 bedrock_server.on('start', () => {
     chatbot_console = spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`]);
+    console.log('Server started');
 });
 
 bedrock_server.on('bot-join', bot_joined => {
     if (bot_joined === 'JasonTheBot') {
+        console.log('JasonTheBot joined');
     }
 });
 
@@ -45,7 +47,7 @@ bedrock_server.on('bot-leave', bot_left => {
         // If the bot gets disconnected for whatever reason, kill it and try again.
         chatbot_console.kill()
         chatbot_console=spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
-        
+        console.log('JasonTheBot trying to rejoin');
     }
 });
 
