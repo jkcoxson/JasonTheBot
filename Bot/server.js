@@ -167,67 +167,62 @@ module.exports = class bedrock_server extends EventEmitter {
         this.#BDS_process.write(`${content}\n`);
     }
 
-    command(args, message) {
-        return new Promise((resolve, reject) => {
-            switch(args[0]) {
-                case 'status':
-                    Promise.all(this.computer_on(), this.BDS_running()).then(([server_power, software_running]) => {
-                        if (server_power) {
-                            if (software_running) {
-                                return resolve('the server is currently running the game server.');
-                            } else {
-                                return resolve('the server is on, but not running the game server.');
-                            }
+    async command(args, message) {
+        switch (args[0]) {
+            case 'status':
+                // try {
+                //     if (await this.computer_on()) {
+                //         if (await this.BDS_running()) {
+                //             return 'the server is currently running the game server.';
+                //         } else {
+                //             return 'the server is on, but not running the game server.';
+                //         }
+                //     } else {
+                //         return 'the server is not currently on.';
+                //     }
+                // } catch (error) {
+                //     console.error(error);
+                // }
+                console.log(this.computer_on);
+                console.log(this.write);
+                break;
+            case 'start':
+                if (!(await this.computer_on())) {
+                    return 'the server is not powered on.';
+                } else {
+                    if (await this.BDS_running()) {
+                        return 'the game server is already running.';
+                    } else {
+                        message.reply('attempting to start the server.');
+                        if (await this.start()) {
+                            return 'the server is now running.';
                         } else {
-                            return resolve('the server is not currently powered on.');
+                            return `the server didn't start successfully.`;
                         }
-                    });
-                    break;
-                case 'start':
-                    Promise.all(this.computer_on(), this.BDS_running()).then(([server_power, software_running]) => {
-                        if (!server_power) {
-                            return resolve('the server is not powered on.');
-                        } else {
-                            if (software_running) {
-                                return resolve('the game server is already running.');
-                            } else {
-                                message.reply('attempting to start the server.');
-                                this.start().then(successful_start => {
-                                    if (successful_start) {
-                                        return resolve('the server is now running.');
-                                    } else {
-                                        return resolve(`the server didn't start successfully.`);
-                                    }
-                                })
-                            }
-                        }
-                    });
-                    break;
+                    }
                     
-                case 'stop':
-                    Promise.all(this.computer_on(), this.BDS_running()).then(([server_power, software_running]) => {
-                        if (!server_power) {
-                            return resolve(`the server isn't powered on to begin with.`);
+                }
+                break;
+            case 'stop':
+                if (!(await this.computer_on())) {
+                    return `the server isn't powered on to begin with.`;
+                } else {
+                    if (!(await this.BDS_running())) {
+                        return `the game server isn't running anyways.`;
+                    } else {
+                        message.reply('attempting to stop the server.');
+                        if (await this.stop()) {
+                            return 'the server is now stopped.';
                         } else {
-                            if (!software_running) {
-                                return resolve(`the game server isn't running anyways.`);
-                            } else {
-                                message.reply('attempting to stop the server.');
-                                this.stop().then(successful_stop => {
-                                    if (successful_stop) {
-                                        return resolve('the server is now stopped.');
-                                    } else {
-                                        return resolve(`the server didn't stop successfully.`);
-                                    }
-                                })
-                            }
+                            return `the server didn't stop successfully.`;
                         }
-                    });
-                    break;
-                default:
-                    return resolve(`that's not a command you silly goose!`);
-                    break;
-            }
-        });
+                    }
+                    
+                }
+                break;
+            default:
+                return `that's not a command you silly goose!`
+                break;
+        }
     }
 }
