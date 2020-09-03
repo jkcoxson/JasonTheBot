@@ -204,15 +204,23 @@ module.exports = class bedrock_server extends EventEmitter {
                     if (!(await this.BDS_running())) {
                         return `the game server isn't running anyways.`;
                     } else {
-                        message.reply('attempting to stop the server.');
-                        if (await this.stop()) {
-                            return 'the server is now stopped.';
+                        if (this.members.length > 0 || this.bots.length > 0) {
+                            return 'sorry, there are still players and/or bots connected, so no stopping the server for you.';
                         } else {
-                            return `the server didn't stop successfully.`;
+                            message.reply('attempting to stop the server.');
+                            if (await this.stop()) {
+                                return 'the server is now stopped.';
+                            } else {
+                                return `the server didn't stop successfully.`;
+                            }
                         }
                     }
                     
                 }
+                break;
+            case 'kill':
+                child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                return 'attempted to kill the game server.';
                 break;
             default:
                 return `that's not a command you silly goose!`
