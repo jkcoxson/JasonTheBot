@@ -13,8 +13,6 @@ module.exports = class bedrock_server extends EventEmitter {
     #server_ip;
     #ssh_user;
     #program_path;
-    #successful_start;
-    #successful_quit;
 
     members;
     bots;
@@ -95,14 +93,11 @@ module.exports = class bedrock_server extends EventEmitter {
                 this.#BDS_process.stdout.setEncoding('utf8');
                 this.#BDS_process.stdout.on('data', data => {
                     if (data.includes('Server started')) {
-                        this.#successful_start = true;
-                        this.emit('start');
+                        this.emit('start-status', true);
                     } else if (data.includes(`can't start server`)) {
-                        this.#successful_start = false;
-                        this.stop();
+                        this.emit('start-status', false);
                     } else if (data.includes('Quit correctly')) {
-                        this.#successful_quit = true;
-                        this.emit('stop');
+                        this.emit('stop-status', false);
                     } else if (data.includes('Player connected:')) {
                         const player = data.match(/Player connected: (.+), xuid: .+$/)[1];
                         if (/bot/i.test(player)) {
@@ -124,17 +119,16 @@ module.exports = class bedrock_server extends EventEmitter {
                     }
                 });
 
-                this.start_TCP_server();
-
                 // Wait to see if it sucessfully starts
-                const interval = setInterval(() => {
-                    if (this.#successful_start !== null) {
-                        clearInterval(interval);
-                        const successful_start_to_return = this.#successful_start;
-                        this.#successful_start = null;
-                        return resolve(successful_start_to_return);
+                this.on('start-status', successful_start => {
+                    resolve(successful_start);
+                    if (successful_start) {
+                        this.emit('start');
                     }
-                }, 50);
+                    return;
+                });
+
+                this.start_TCP_server();
             } else {
                 return resolve(true);
             }
@@ -147,16 +141,15 @@ module.exports = class bedrock_server extends EventEmitter {
                 this.write('stop');
 
                 // Wait to see if it successfully stops
-                const interval = setInterval(() => {
-                    if (this.#successful_quit !== null) {
-                        clearInterval(interval);
-                        const successful_quit_to_return = this.#successful_quit;
-                        this.#successful_quit = null;
+                this.on('stop-status', successful_stop => {
+                    resolve(successful_quit);
+                    if (successful_stop) {
                         this.#BDS_process.kill();
                         this.#BDS_process = null;
-                        return resolve(successful_quit_to_return);
+                        this.emit('stop');
                     }
-                }, 50);
+                    return;
+                });
             } else {
                 return resolve(true);
             }
