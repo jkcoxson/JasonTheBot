@@ -5,14 +5,13 @@ const net = require('net');
 const config = require('./bedrock_server.config.json');
 const { resolve } = require('path');
 
-const port = 12345;
-
 module.exports = class bedrock_server extends EventEmitter {
     #BDS_process;
     #tcp_server;
     #server_ip;
     #ssh_user;
     #program_path;
+    #TCP_proxy_port;
 
     members;
     bots;
@@ -23,6 +22,7 @@ module.exports = class bedrock_server extends EventEmitter {
         this.#server_ip = config.server_ip;
         this.#ssh_user = config.ssh_user;
         this.#program_path = config.bedrock_process_path;
+        this.#TCP_proxy_port = config.TCP_proxy_port;
 
         this.members = [];
         this.bots = [];
@@ -84,7 +84,7 @@ module.exports = class bedrock_server extends EventEmitter {
         this.#BDS_process.on('exit', (code, signal) => {
             this.#tcp_server.close();
         });
-        this.#tcp_server.listen(port);
+        this.#tcp_server.listen(this.#TCP_proxy_port);
     }
 
     start() {
