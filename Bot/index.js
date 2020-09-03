@@ -125,16 +125,17 @@ function GoSubwaySandwich() {
     chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/Go/main.go`]);
     chatbot_console.stdout.setEncoding('utf-8');
     chatbot_console.stdout.on('data', data => {
-        if (data.split(:)[1].startsWith(0x1)){
-            // Chat message
-            let messagearray = data.split( ).shift().shift().pop().pop().pop(); 
-            let sender=messagearray[0].substr(12,messagearray.length-1).substr(0,tryname.length-2);
-            messagearray.shift();
-        }
-        if(data.split(:)[1].startsWith(0x2)){
-            //Death message
-        }
-    });
+        // Start parsing the string
+        if (data.split(`:`)[1].startsWith(0x1)){
+            // Chat message
+            let messagearray = data.split(` `).shift().shift().pop().pop().pop(); 
+            let sender=messagearray[0].substr(12,messagearray.length-1).substr(0,tryname.length-2);
+            messagearray.shift();
+        }
+        if (data.split(`:`)[1].startsWith(0x2)){
+            // Death message
+        }
+    });
 }
 
 client.login(config.BOT_TOKEN);
