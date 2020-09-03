@@ -169,10 +169,25 @@ module.exports = class bedrock_server extends EventEmitter {
 
     async command(args, message) {
         switch (args[0]) {
+            case 'server':
+            case 'power': // Fallthrough intentional here
+                return '`server power` and `server running` have been replaced with one command, `server status`.'
+                break;
             case 'status':
                 if (await this.computer_on()) {
                     if (await this.BDS_running()) {
-                        return 'the server is currently running the game server.';
+                        let response = 'the server is currently running the game server.';
+                        if (this.members.length > 0) {
+                            response += `\nPlayers online: ${this.members.join(', ')}`;
+                        } else {
+                            response += '\nNo players online';
+                        }
+                        if (this.bots.length > 0) {
+                            response += `\nBots online: ${this.members.join(', ')}`;
+                        } else {
+                            response += '\nNo bots online';
+                        }
+                        return response;
                     } else {
                         return 'the server is on, but not running the game server.';
                     }
