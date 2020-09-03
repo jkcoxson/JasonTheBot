@@ -97,7 +97,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     } else if (data.includes(`can't start server`)) {
                         this.emit('start-status', false);
                     } else if (data.includes('Quit correctly')) {
-                        this.emit('stop-status', false);
+                        this.emit('stop-status', true);
                     } else if (data.includes('Player connected:')) {
                         const player = data.match(/Player connected: (.+), xuid: .+$/)[1];
                         if (/bot/i.test(player)) {
@@ -204,11 +204,9 @@ module.exports = class bedrock_server extends EventEmitter {
                         return `the game server isn't running anyways.`;
                     } else {
                         message.reply('attempting to stop the server.');
-                        const stop_worked = await this.stop();
-                        if (stop_worked) {
+                        if (await this.stop()) {
                             return 'the server is now stopped.';
                         } else {
-                            console.log(stop_worked);
                             return `the server didn't stop successfully.`;
                         }
                     }
