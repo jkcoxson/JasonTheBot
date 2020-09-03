@@ -70,7 +70,7 @@ module.exports = class bedrock_server extends EventEmitter {
 
     start_TCP_server() {
         this.#tcp_server = net.createServer();
-        server.on('connection', socket => {
+        this.#tcp_server.on('connection', socket => {
             socket.pipe(this.#BDS_process.stdin);
             this.#BDS_process.stdout.pipe(socket);
             socket.on('error', error => {
@@ -81,9 +81,9 @@ module.exports = class bedrock_server extends EventEmitter {
             })
         });
         this.#BDS_process.on('exit', (code, signal) => {
-            server.close();
+            this.#tcp_server.close();
         });
-        server.listen(port);
+        this.#tcp_server.listen(port);
     }
 
     start() {
