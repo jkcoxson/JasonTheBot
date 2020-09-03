@@ -169,14 +169,18 @@ module.exports = class bedrock_server extends EventEmitter {
     async command(args, message) {
         switch (args[0]) {
             case 'status':
-                if (await this.computer_on()) {
-                    if (await this.BDS_running()) {
-                        return 'the server is currently running the game server.';
+                try {
+                    if (await this.computer_on()) {
+                        if (await this.BDS_running()) {
+                            return 'the server is currently running the game server.';
+                        } else {
+                            return 'the server is on, but not running the game server.';
+                        }
                     } else {
-                        return 'the server is on, but not running the game server.';
+                        return 'the server is not currently on.';
                     }
-                } else {
-                    return 'the server is not currently on.';
+                } catch (error) {
+                    console.error(error);
                 }
             case 'start':
                 if (!(await this.computer_on())) {
