@@ -36,6 +36,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 } else {
                     if (!BDS_running) {
                         this.#BDS_process.kill();
+                        this.#BDS_process = null;
                         this.start();
                         console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
                     }
