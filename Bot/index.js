@@ -33,16 +33,10 @@ const bedrock_server = new (require('./server.js'))();
 
 bedrock_server.on('start', () => {
     chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`, `/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
-    chatbot_console.stdout.setEncoding('utf-8');
-    chatbot_console.stdout.pipe(stdout);
-    chatbot_console.stderr.setEncoding('utf-8');
-    chatbot_console.stderr.pipe(stderr);
-    console.log('Server started');
 });
 
 bedrock_server.on('bot-join', bot_joined => {
     if (bot_joined === 'JasonTheBot') {
-        console.log('JasonTheBot joined');
     }
 });
 
@@ -53,18 +47,6 @@ bedrock_server.on('bot-leave', bot_left => {
         chatbot_console = spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
         console.log('JasonTheBot trying to rejoin');
     }
-});
-
-bedrock_server.on('player-join', player_joined => {
-    console.log(`${player_joined} joined`);
-});
-
-bedrock_server.on('player-leave', player_left => {
-    console.log(`${player_left} left`);
-});
-
-bedrock_server.on('stop', () => {
-    console.log('Stop');
 });
 
 let chatbot_console = null; // The Go process that does chatting
