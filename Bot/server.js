@@ -183,6 +183,8 @@ module.exports = class bedrock_server extends EventEmitter {
                 //     console.error(error);
                 // }
                 console.log(this.computer_on);
+                console.log(this.write);
+                break;
             case 'start':
                 if (!(await this.computer_on())) {
                     return 'the server is not powered on.';
@@ -199,6 +201,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     }
                     
                 }
+                break;
             case 'stop':
                 if (!(await this.computer_on())) {
                     return `the server isn't powered on to begin with.`;
@@ -215,8 +218,10 @@ module.exports = class bedrock_server extends EventEmitter {
                     }
                     
                 }
+                break;
             default:
                 return `that's not a command you silly goose!`
+                break;
         }
     }
 }
