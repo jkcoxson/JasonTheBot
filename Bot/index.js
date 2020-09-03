@@ -32,7 +32,7 @@ fs.readFile('random.txt', 'utf8' , (err, data) => {
 const bedrock_server = new (require('./server.js'))();
 
 bedrock_server.on('start', () => {
-    chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`, `/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
+    GoSubwaySandwich();
 });
 
 bedrock_server.on('bot-join', bot_joined => {
@@ -45,8 +45,7 @@ bedrock_server.on('bot-leave', bot_left => {
     if (bot_left === "JasonTheBot") {
         // If the bot gets disconnected for whatever reason, kill it and try again.
         chatbot_console.kill()
-        chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`, `/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
-        console.log('JasonTheBot trying to rejoin');
+        GoSubwaySandwich();
     }
 });
 
@@ -121,5 +120,21 @@ setInterval(function(){
     }
     
 }, 60 * minute);
+
+function GoSubwaySandwich() {
+    chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/Go/main.go`]);
+    chatbot_console.stdout.setEncoding('utf-8');
+    chatbot_console.stdout.on('data', data => {
+        if (data.split(:)[1].startsWith(0x1)){
+            // Chat message
+            let messagearray = data.split( ).shift().shift().pop().pop().pop(); 
+            let sender=messagearray[0].substr(12,messagearray.length-1).substr(0,tryname.length-2);
+            messagearray.shift();
+        }
+        if(data.split(:)[1].startsWith(0x2)){
+            //Death message
+        }
+    });
+}
 
 client.login(config.BOT_TOKEN);
