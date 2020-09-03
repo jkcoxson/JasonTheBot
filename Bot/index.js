@@ -55,6 +55,10 @@ bedrock_server.on('bot-leave', bot_left => {
     }
 });
 
+bedrock_server.on('player-join', player_joined => {
+    console.log(`${player_joined} joined`);
+})
+
 bedrock_server.on('stop', () => {
     console.log('Stop');
 })
