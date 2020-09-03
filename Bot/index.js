@@ -37,6 +37,7 @@ bedrock_server.on('start', () => {
 
 bedrock_server.on('bot-join', bot_joined => {
     if (bot_joined === 'JasonTheBot') {
+        // What to do when Jason joins?
     }
 });
 
@@ -44,7 +45,7 @@ bedrock_server.on('bot-leave', bot_left => {
     if (bot_left === "JasonTheBot") {
         // If the bot gets disconnected for whatever reason, kill it and try again.
         chatbot_console.kill()
-        chatbot_console = spawn(`/usr/local/go/bin/go`,[`run`,`/home/open/Documents/Go/main.go`])
+        chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`, `/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
         console.log('JasonTheBot trying to rejoin');
     }
 });
