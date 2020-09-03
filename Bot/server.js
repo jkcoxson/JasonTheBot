@@ -24,6 +24,9 @@ module.exports = class bedrock_server extends EventEmitter {
         this.#ssh_user = config.ssh_user;
         this.#program_path = config.bedrock_process_path;
 
+        this.members = [];
+        this.bots = [];
+
         setInterval(async () => {
             if (this.#BDS_process) {
                 const [computer_on, BDS_running] = await Promise.all([this.computer_on(), this.BDS_running()]);
