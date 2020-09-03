@@ -52,7 +52,7 @@ bedrock_server.on('bot-leave', bot_left => {
 let chatbot_console = null; // The Go process that does chatting
 let grace_stop = true; // ?
 const commands = {
-    server: bedrock_server.command,
+    server: bedrock_server.command.bind(bedrock_server),
 
     bot: async args => {
         return 'this is a message back to the user';
