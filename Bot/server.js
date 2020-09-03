@@ -73,6 +73,7 @@ module.exports = class bedrock_server extends EventEmitter {
     start_TCP_server() {
         this.#tcp_server = net.createServer();
         this.#tcp_server.on('connection', socket => {
+            socket.setEncoding('utf-8');
             socket.pipe(this.#BDS_process.stdin);
             this.#BDS_process.stdout.pipe(socket);
             socket.on('error', error => {
