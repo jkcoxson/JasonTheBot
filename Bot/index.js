@@ -55,6 +55,10 @@ bedrock_server.on('bot-leave', bot_left => {
     }
 });
 
+bedrock_server.on('stop', () => {
+    console.log('Stop');
+})
+
 let chatbot_console = null; // The Go process that does chatting
 let grace_stop = true; // ?
 const commands = {
