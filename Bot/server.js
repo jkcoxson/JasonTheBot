@@ -27,27 +27,29 @@ module.exports = class bedrock_server extends EventEmitter {
         this.members = [];
         this.bots = [];
 
-        setInterval(async () => {
-            if (this.#BDS_process) {
-                const [computer_on, BDS_running] = await Promise.all([this.computer_on(), this.BDS_running()]);
-                if (!computer_on) {
-                    this.stop();
-                    console.log('The computer is not on, killing the SSH BDS process in Node');
-                } else {
-                    if (!BDS_running) {
-                        this.#BDS_process.kill();
-                        this.#BDS_process = null;
-                        this.start();
-                        console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
-                    }
-                }
+        setInterval(this.check_handle, 30000);
+    }
+
+    async check_handle() {
+        if (this.#BDS_process) {
+            const [computer_on, BDS_running] = await Promise.all([this.computer_on(), this.BDS_running()]);
+            if (!computer_on) {
+                this.stop();
+                console.log('The computer is not on, killing the SSH BDS process in Node');
             } else {
-                if (await this.BDS_running()) {
-                    child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
-                    console.log('The BDS SSH handle that Node owns is dead, but BDS is running on the computer. Killing BDS');
+                if (!BDS_running) {
+                    this.#BDS_process.kill();
+                    this.#BDS_process = null;
+                    this.start();
+                    console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
                 }
             }
-        }, 30000);
+        } else {
+            if (await this.BDS_running()) {
+                child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                console.log('The BDS SSH handle that Node owns is dead, but BDS is running on the computer. Killing BDS');
+            }
+        }
     }
 
     computer_on() {
@@ -174,6 +176,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 return '`server power` and `server running` have been replaced with one command, `server status`.'
                 break;
             case 'status':
+                await this.check_handle();
                 if (await this.computer_on()) {
                     if (await this.BDS_running()) {
                         let response = 'the server is currently running the game server.';
@@ -196,6 +199,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 }
                 break;
             case 'start':
+                await this.check_handle();
                 if (!(await this.computer_on())) {
                     return 'the server is not powered on.';
                 } else {
@@ -213,6 +217,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 }
                 break;
             case 'stop':
+                await this.check_handle();
                 if (!(await this.computer_on())) {
                     return `the server isn't powered on to begin with.`;
                 } else {
@@ -232,10 +237,6 @@ module.exports = class bedrock_server extends EventEmitter {
                     }
                     
                 }
-                break;
-            case 'kill':
-                child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
-                return 'attempted to kill the game server.';
                 break;
             default:
                 return `that's not a command you silly goose!`
