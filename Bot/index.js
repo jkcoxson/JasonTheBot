@@ -116,7 +116,7 @@ setInterval(function(){
     if (date.getHours()>7 && date.getHours()<22){
         let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
         
-        client.channels.cache.get("743322271355240492").send(toSend);
+        //client.channels.cache.get("743322271355240492").send(toSend);
     }
     
 }, 60 * minute);
