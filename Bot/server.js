@@ -27,7 +27,7 @@ module.exports = class bedrock_server extends EventEmitter {
         this.members = [];
         this.bots = [];
 
-        setInterval(this.check_handle, 30000);
+        setInterval(this.check_handle.bind(this), 30000);
     }
 
     async check_handle() {
