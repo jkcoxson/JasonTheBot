@@ -186,7 +186,7 @@ module.exports = class bedrock_server extends EventEmitter {
                             response += '\nNo players online';
                         }
                         if (this.bots.length > 0) {
-                            response += `\nBots online: ${this.members.join(', ')}`;
+                            response += `\nBots online: ${this.bots.join(', ')}`;
                         } else {
                             response += '\nNo bots online';
                         }
