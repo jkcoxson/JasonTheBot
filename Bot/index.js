@@ -51,22 +51,22 @@ bedrock_server.on('start', () => {
 });
 
 bedrock_server.on('player-join', player_joined => {
-    client.channels.cache.get("744680352412467200").send(`${player_joined} joined the game!`);
+    client.channels.cache.get("744680352412467200").send(`${player_joined} joined the game!  :smiley:`);
 });
 
 bedrock_server.on('player-leave', player_left => {
-    client.channels.cache.get("744680352412467200").send(`${player_left} left the game :frowning2:`);
+    client.channels.cache.get("744680352412467200").send(`${player_left} left the game  :cry:`);
 });
 
 bedrock_server.on('bot-join', bot_joined => {
-    client.channels.cache.get("744680352412467200").send(`${bot_joined} joined the game!`);
+    client.channels.cache.get("744680352412467200").send(`${bot_joined} joined the game!  :smiley:  (or, unless you're Xander,  :cry:)`);
     if (bot_joined === 'JasonTheBot') {
         // What to do when Jason joins?
     }
 });
 
 bedrock_server.on('bot-leave', bot_left => {
-    client.channels.cache.get("744680352412467200").send(`${bot_left} left the game :frowning2: (or, unless you're Xander, :smiley:)`);
+    client.channels.cache.get("744680352412467200").send(`${bot_left} left the game  :cry:  (or, unless you're Xander,  :smiley:)`);
     if (bot_left === "JasonTheBot") {
         // If the bot gets disconnected for whatever reason, kill it and try again.
         console.log("A bot left")
