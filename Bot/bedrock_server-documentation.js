@@ -17,7 +17,7 @@ const successful_start = await server.start();
 const successful_stop = await server.stop();
 
 // Write to stdin of the server
-server.write('kill WiiUGamertag200');
+server.write('kill LimberHawk');
 
 // See players currently connected to the server (it's an array)
 console.log(server.members);

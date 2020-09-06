@@ -7,6 +7,7 @@ const { exec } = require('child_process');
 const { send, stderr, stdout } = require('process');
 const { Console, time } = require('console');
 const { resolve } = require('path');
+const { rejects } = require('assert');
 var date = new Date();
 // Make the variable to manipulate
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
@@ -15,14 +16,30 @@ const second = 1000;
 const minute = second*60;
 
 //This is where all the bot replies will be parsed and read in. 
-var random;
-fs.readFile('random.txt', 'utf8' , (err, data) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    random=data.split("\n");
-});
+
+
+var randommessage;
+var arrow;
+var cactus;
+var creeper;
+var drown;
+var drowned;
+var ender_dragon;
+var ender_dragon_magic;
+var enderman;
+var fall;
+var lava;
+var llama;
+var shulker;
+var spider;
+var suffocate;
+var tnt;
+var fallvoid;
+var witch_magic;
+var wolf;
+var zombie;
+loadall();
+
 
 ///////////////////////////////////////////////////////
 /// Jackson's Discord Bot, but this time, he's mad! ///
@@ -44,13 +61,13 @@ bedrock_server.on('bot-join', bot_joined => {
 bedrock_server.on('bot-leave', bot_left => {
     if (bot_left === "JasonTheBot") {
         // If the bot gets disconnected for whatever reason, kill it and try again.
+        console.log("A bot left")
         chatbot_console.kill()
         GoSubwaySandwich();
     }
 });
 
 let chatbot_console = null; // The Go process that does chatting
-let grace_stop = true; // ?
 const commands = {
     server: bedrock_server.command.bind(bedrock_server),
 
@@ -59,8 +76,7 @@ const commands = {
     },
     //Test command to be removed once functionality has been confirmed.
     random: async args =>{
-        let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
-        //Testing in my personal server until confirmed working. Don't want to spam the production server.
+        let toSend = randommessage[Math.floor(Math.random() * Math.floor(randommessage.length-1))]
         client.channels.cache.get("706625332941160498").send(toSend);
     }
 };
@@ -106,6 +122,16 @@ client.on('message', async message => {
         if (message.content.toLowerCase().includes(`good bot`)){
             message.channel.send("I know I am.");
         }
+        
+        if (message.channel.id==="706625332941160498"){
+            try {
+                chatbot_console.setEncoding("utf-8")
+                chatbot_console.stdin.write(`${message.author.username}: ${message.content}\n`)
+            }catch{
+
+            }
+            
+        }
     }
 });
 
@@ -114,8 +140,8 @@ client.on('message', async message => {
 // 8 AM and 9 PM
 setInterval(function(){
     if (date.getHours()>7 && date.getHours()<22){
-        let toSend = random[Math.floor(Math.random() * Math.floor(random.length-1))]
-        
+        let toSend = randommessage[Math.floor(Math.random() * Math.floor(randommessage.length-1))]
+        //This was getting anoying so I disabled it
         //client.channels.cache.get("743322271355240492").send(toSend);
     }
     
@@ -123,27 +149,180 @@ setInterval(function(){
 
 function GoSubwaySandwich() {
     console.log("Welcome to Subway, can I eat your sandwich?")
-    chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/Go/main.go`]);
+    chatbot_console = spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
     chatbot_console.stdout.setEncoding('utf-8');
     chatbot_console.stdout.on('data', data => {
         console.log(data);
-        // Start parsing the string
-        if (data.split(`:`)[1].startsWith(0x1)){
-            // Chat message
-            let messagearray = data.split(` `).shift().shift().pop().pop().pop(); 
-            let sender=messagearray[0].substr(12,messagearray.length-1).substr(0,tryname.length-2);
-            messagearray.shift();
-            let messagecontent = "";
-            for (var i; i<messagearray.length-1;i++){
-                messagecontent=messagecontent.concat(messagearray[i]);
-                messagecontent=messagecontent.concat(` `);
+        // Start parsing the string
+        if((data.split(":")[1])!==undefined){
+            if (data.split(":")[1].startsWith("0x1")){
+                // Chat message
+                let messagearray = data.split(" ");
+                sender="";
+                message="";
+
+                for (i=0;i<messagearray.length-1;i++){
+                    if(messagearray[i].startsWith("SourceName:")){
+                        if (sender===""){
+                            sender=messagearray[i].substr(12,messagearray[i].length-1);
+                            sender=sender.substr(0,sender.length-2)
+                        }
+                    }
+                    if(messagearray[i].startsWith("Message:")){
+                        if (message===""){
+                            message=messagearray[i].substr(9,messagearray[i].length-1);
+                            let endfound = false
+                            let endfinder =1
+                            while(!endfound){
+                                if (messagearray[i+endfinder].startsWith("Parameters:")){
+                                    endfound=true;
+                                }else{
+                                    message=message+" "+messagearray[i+endfinder]
+                                }
+                                endfinder++;
+                            }
+                            message=message.substr(0,message.length-2);
+                        }
+                    }
+                }
+                console.log(`Final Output:    ${sender}: ${message}`)
+                if (sender!=="JasonTheBot"){
+                    client.channels.cache.get("706625332941160498").send(`${sender}: ${message}`);
+                }
+                
+
             }
-            console.log(`${sender}: ${messagecontent}`);
-        }
-        if (data.split(`:`)[1].startsWith(0x2)){
-            // Death message
-        }
-    });
+            if (data.split(":")[1].startsWith("0x2")){
+                // Death message
+                if (data.includes("Message:\"§e%multiplayer.player.left\",")){
+                    return;
+                    //Seth is managing this
+                }
+                if (data.includes("Message:\"§e%multiplayer.player.joined\",")){
+                    return;
+                    //Dito
+                }
+                let messagearray=data.split(" ")
+                let sender=""
+                for (i =0; i<messagearray.length-1; i++){
+                    console.log("for loop");
+                    //console.log(messagearray[i]);
+                    if (messagearray[i].startsWith("Parameters:[]string")){
+                        sender=messagearray[i].substr(21,messagearray[i].length-1);
+                        sender=sender.substr(0,sender.length-2)
+                        if (sender.endsWith("\"")){
+                            sender=sender.substr(0,sender.length-1);
+                        }
+                    }
+                }
+                message="";
+                if (data.includes("entity.arrow.name")){
+                    message=arrow[Math.floor(Math.random() * Math.floor(arrow.length-1))]
+                }
+                if (data.includes("death.attack.cactus")){
+                    message=cactus[Math.floor(Math.random() * Math.floor(cactus.length-1))]
+                }
+                if (data.includes("death.attack.explosion.player")){
+                    if (data.includes("entity.creeper.name")){
+                        message=creeper[Math.floor(Math.random() * Math.floor(creeper.length-1))]
+                    }else{
+                        message=tnt[Math.floor(Math.random() * Math.floor(tnt.length-1))]
+                    }
+                }
+                if (data.includes("death.attack.drown")){
+                    message=drown[Math.floor(Math.random() * Math.floor(drown.length-1))]
+                }
+                if (data.includes("entity.drowned.name")){
+                    message=drowned[Math.floor(Math.random() * Math.floor(drowned.length-1))]
+                }
+                if (data.includes("entity.ender_dragon.name")){
+                    if (data.includes("indirectMagic")){
+                        message=ender_dragon_magic[Math.floor(Math.random() * Math.floor(ender_dragon_magic.length-1))]
+                    }else{
+                        message=ender_dragon[Math.floor(Math.random() * Math.floor(ender_dragon.length-1))]
+                    }
+                }
+                if (data.includes("entity.enderman.name")){
+                    message=enderman[Math.floor(Math.random() * Math.floor(enderman.length-1))]
+                }
+                if (data.includes("death.attack.fall")){
+                    message=fall[Math.floor(Math.random() * Math.floor(fall.length-1))]
+                }
+                if (data.includes("death.attack.lava")){
+                    message=lava[Math.floor(Math.random() * Math.floor(lava.length-1))]
+                }
+                if (data.includes("entity.llama.name")){
+                    message=llama[Math.floor(Math.random() * Math.floor(llama.length-1))]
+                }
+                if (data.includes("entity.shulker_bullet.name")){
+                    message=shulker[Math.floor(Math.random() * Math.floor(shulker.length-1))]
+                }
+                if (data.includes("entity.spider.name")){
+                    message=spider[Math.floor(Math.random() * Math.floor(spider.length-1))]
+                }
+                if (data.includes("death.attack.inWall")){
+                    message=suffocate[Math.floor(Math.random() * Math.floor(suffocate.length-1))]
+                }
+                if (data.includes("death.attack.outOfWorld")){
+                    message=fallvoid[Math.floor(Math.random() * Math.floor(fallvoid.length-1))]
+                }
+                if (data.includes("entity.witch.name")){
+                    message=witch_magic[Math.floor(Math.random() * Math.floor(witch_magic.length-1))]
+                }    
+                if (data.includes("entity.wolf.name")){
+                    message=wolf[Math.floor(Math.random() * Math.floor(wolf.length-1))]
+                }    
+                if (data.includes("entity.zombie.name")){
+                    message=zombie[Math.floor(Math.random() * Math.floor(zombie.length-1))]
+                }     
+                if (message===""){
+                    message="died."
+                }
+                
+                let toSend = `${sender} ${message}`
+                client.channels.cache.get("706625332941160498").send(toSend);
+
+            }
+        }
+    });
+}
+
+
+async function loadall(){
+    randommessage = await loadlines('random.txt');
+    arrow = await loadlines('DeathMessages/Arrow.txt').then();
+    cactus = await loadlines('DeathMessages/Cactus.txt');
+    creeper = await loadlines('DeathMessages/Creeper.txt');
+    drown = await loadlines('DeathMessages/Drown.txt');
+    drowned = await loadlines('DeathMessages/Drowned.txt');
+    ender_dragon = await loadlines('DeathMessages/Ender_Dragon.txt');
+    ender_dragon_magic = await loadlines('DeathMessages/Ender_Dragon_Magic.txt');
+    enderman = await loadlines('DeathMessages/Enderman.txt');
+    fall = await loadlines('DeathMessages/Fall.txt');
+    lava = await loadlines('DeathMessages/Lava.txt');
+    llama = await loadlines('DeathMessages/Llama.txt');
+    shulker = await loadlines('DeathMessages/Shulker.txt');
+    spider = await loadlines('DeathMessages/Spider.txt')
+    suffocate = await loadlines('DeathMessages/Suffocate.txt');
+    tnt = await loadlines('DeathMessages/TNT.txt');
+    fallvoid = await loadlines('DeathMessages/Void.txt');
+    witch_magic = await loadlines('DeathMessages/Witch_Magic.txt');
+    wolf = await loadlines('DeathMessages/Wolf.txt');
+    zombie = await loadlines('DeathMessages/Zombie.txt')
+    
+}
+
+function loadlines(path){
+    return new Promise((resolve,reject)=>{
+        fs.readFile(path, 'utf8' , (err, data) => {
+            if (err) {
+                console.error(err);
+                reject;
+            }
+            resolve(data.split("\n"));
+        });
+    });
+
 }
 
 client.login(config.BOT_TOKEN);
