@@ -107,7 +107,7 @@ client.on('message', async message => {
 
     // Command Library
     if (isCommand) {
-        if (message.channel.id === '744680352412467200') {
+        if (message.channel.id === '743335229137092718') {
             if (commands.hasOwnProperty(command)) {
                 const response = await commands[command](args, message);
                 
