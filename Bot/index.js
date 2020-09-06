@@ -50,13 +50,23 @@ bedrock_server.on('start', () => {
     GoSubwaySandwich();
 });
 
+bedrock_server.on('player-join', player_joined => {
+    client.channels.cache.get("744680352412467200").send(`${player_joined} joined the game!`);
+});
+
+bedrock_server.on('player-leave', player_left => {
+    client.channels.cache.get("744680352412467200").send(`${player_left} left the game :frowning2:`);
+});
+
 bedrock_server.on('bot-join', bot_joined => {
+    client.channels.cache.get("744680352412467200").send(`${bot_joined} joined the game!`);
     if (bot_joined === 'JasonTheBot') {
         // What to do when Jason joins?
     }
 });
 
 bedrock_server.on('bot-leave', bot_left => {
+    client.channels.cache.get("744680352412467200").send(`${bot_left} left the game :frowning2: (or, unless you're Xander, :smiley:)`);
     if (bot_left === "JasonTheBot") {
         // If the bot gets disconnected for whatever reason, kill it and try again.
         console.log("A bot left")
@@ -73,7 +83,7 @@ const commands = {
         return 'this is a message back to the user';
     },
     //Test command to be removed once functionality has been confirmed.
-    random: async args =>{
+    random: async args => {
         let toSend = randommessage[Math.floor(Math.random() * Math.floor(randommessage.length-1))]
         client.channels.cache.get("706625332941160498").send(toSend);
     }
@@ -215,64 +225,47 @@ function GoSubwaySandwich() {
                 message="";
                 if (data.includes("entity.arrow.name")){
                     message=arrow[Math.floor(Math.random() * Math.floor(arrow.length-1))]
-                }
-                if (data.includes("death.attack.cactus")){
+                } else if (data.includes("death.attack.cactus")){
                     message=cactus[Math.floor(Math.random() * Math.floor(cactus.length-1))]
-                }
-                if (data.includes("death.attack.explosion.player")){
+                } else if (data.includes("death.attack.explosion.player")){
                     if (data.includes("entity.creeper.name")){
                         message=creeper[Math.floor(Math.random() * Math.floor(creeper.length-1))]
                     }else{
                         message=tnt[Math.floor(Math.random() * Math.floor(tnt.length-1))]
                     }
-                }
-                if (data.includes("death.attack.drown")){
+                } else if (data.includes("death.attack.drown")){
                     message=drown[Math.floor(Math.random() * Math.floor(drown.length-1))]
-                }
-                if (data.includes("entity.drowned.name")){
+                } else if (data.includes("entity.drowned.name")){
                     message=drowned[Math.floor(Math.random() * Math.floor(drowned.length-1))]
-                }
-                if (data.includes("entity.ender_dragon.name")){
+                } else if (data.includes("entity.ender_dragon.name")){
                     if (data.includes("indirectMagic")){
                         message=ender_dragon_magic[Math.floor(Math.random() * Math.floor(ender_dragon_magic.length-1))]
-                    }else{
+                    } else {
                         message=ender_dragon[Math.floor(Math.random() * Math.floor(ender_dragon.length-1))]
                     }
-                }
-                if (data.includes("entity.enderman.name")){
+                } else if (data.includes("entity.enderman.name")){
                     message=enderman[Math.floor(Math.random() * Math.floor(enderman.length-1))]
-                }
-                if (data.includes("death.attack.fall")){
+                } else if (data.includes("death.attack.fall")){
                     message=fall[Math.floor(Math.random() * Math.floor(fall.length-1))]
-                }
-                if (data.includes("death.attack.lava")){
+                } else if (data.includes("death.attack.lava")){
                     message=lava[Math.floor(Math.random() * Math.floor(lava.length-1))]
-                }
-                if (data.includes("entity.llama.name")){
+                } else if (data.includes("entity.llama.name")){
                     message=llama[Math.floor(Math.random() * Math.floor(llama.length-1))]
-                }
-                if (data.includes("entity.shulker_bullet.name")){
+                } else if (data.includes("entity.shulker_bullet.name")){
                     message=shulker[Math.floor(Math.random() * Math.floor(shulker.length-1))]
-                }
-                if (data.includes("entity.spider.name")){
+                } else if (data.includes("entity.spider.name")){
                     message=spider[Math.floor(Math.random() * Math.floor(spider.length-1))]
-                }
-                if (data.includes("death.attack.inWall")){
+                } else if (data.includes("death.attack.inWall")){
                     message=suffocate[Math.floor(Math.random() * Math.floor(suffocate.length-1))]
-                }
-                if (data.includes("death.attack.outOfWorld")){
+                } else if (data.includes("death.attack.outOfWorld")){
                     message=fallvoid[Math.floor(Math.random() * Math.floor(fallvoid.length-1))]
-                }
-                if (data.includes("entity.witch.name")){
+                } else if (data.includes("entity.witch.name")){
                     message=witch_magic[Math.floor(Math.random() * Math.floor(witch_magic.length-1))]
-                }    
-                if (data.includes("entity.wolf.name")){
+                } else if (data.includes("entity.wolf.name")){
                     message=wolf[Math.floor(Math.random() * Math.floor(wolf.length-1))]
-                }    
-                if (data.includes("entity.zombie.name")){
+                } else if (data.includes("entity.zombie.name")){
                     message=zombie[Math.floor(Math.random() * Math.floor(zombie.length-1))]
-                }     
-                if (message===""){
+                } else if (message===""){
                     message="died."
                 }
                 
