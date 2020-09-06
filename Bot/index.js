@@ -18,26 +18,26 @@ const minute = second*60;
 //This is where all the bot replies will be parsed and read in. 
 
 
-var randommessage;
-var arrow;
-var cactus;
-var creeper;
-var drown;
-var drowned;
-var ender_dragon;
-var ender_dragon_magic;
-var enderman;
-var fall;
-var lava;
-var llama;
-var shulker;
-var spider;
-var suffocate;
-var tnt;
-var fallvoid;
-var witch_magic;
-var wolf;
-var zombie;
+let randommessage;
+let arrow;
+let cactus;
+let creeper;
+let drown;
+let drowned;
+let ender_dragon;
+let ender_dragon_magic;
+let enderman;
+let fall;
+let lava;
+let llama;
+let shulker;
+let spider;
+let suffocate;
+let tnt;
+let fallvoid;
+let witch_magic;
+let wolf;
+let zombie;
 loadall();
 
 
@@ -288,28 +288,31 @@ function GoSubwaySandwich() {
 }
 
 
-async function loadall(){
-    randommessage = await loadlines('random.txt');
-    arrow = await loadlines('DeathMessages/Arrow.txt').then();
-    cactus = await loadlines('DeathMessages/Cactus.txt');
-    creeper = await loadlines('DeathMessages/Creeper.txt');
-    drown = await loadlines('DeathMessages/Drown.txt');
-    drowned = await loadlines('DeathMessages/Drowned.txt');
-    ender_dragon = await loadlines('DeathMessages/Ender_Dragon.txt');
-    ender_dragon_magic = await loadlines('DeathMessages/Ender_Dragon_Magic.txt');
-    enderman = await loadlines('DeathMessages/Enderman.txt');
-    fall = await loadlines('DeathMessages/Fall.txt');
-    lava = await loadlines('DeathMessages/Lava.txt');
-    llama = await loadlines('DeathMessages/Llama.txt');
-    shulker = await loadlines('DeathMessages/Shulker.txt');
-    spider = await loadlines('DeathMessages/Spider.txt')
-    suffocate = await loadlines('DeathMessages/Suffocate.txt');
-    tnt = await loadlines('DeathMessages/TNT.txt');
-    fallvoid = await loadlines('DeathMessages/Void.txt');
-    witch_magic = await loadlines('DeathMessages/Witch_Magic.txt');
-    wolf = await loadlines('DeathMessages/Wolf.txt');
-    zombie = await loadlines('DeathMessages/Zombie.txt')
-    
+async function loadall() {  
+    [randommessage, arrow, cactus, creeper, drown, drowned, ender_dragon, ender_dragon_magic,
+        enderman, fall, lava, llama, shulker, spider, suffocate, tnt, fallvoid, witch_magic,
+        wolf, zombie] = await Promise.all([
+            loadlines('random.txt'),
+            loadlines('DeathMessages/Arrow.txt'),
+            loadlines('DeathMessages/Cactus.txt'),
+            loadlines('DeathMessages/Creeper.txt'),
+            loadlines('DeathMessages/Drown.txt'),
+            loadlines('DeathMessages/Drowned.txt'),
+            loadlines('DeathMessages/Ender_Dragon.txt'),
+            loadlines('DeathMessages/Ender_Dragon_Magic.txt'),
+            loadlines('DeathMessages/Enderman.txt'),
+            loadlines('DeathMessages/Fall.txt'),
+            loadlines('DeathMessages/Lava.txt'),
+            loadlines('DeathMessages/Llama.txt'),
+            loadlines('DeathMessages/Shulker.txt'),
+            loadlines('DeathMessages/Spider.txt'),
+            loadlines('DeathMessages/Suffocate.txt'),
+            loadlines('DeathMessages/TNT.txt'),
+            loadlines('DeathMessages/Void.txt'),
+            loadlines('DeathMessages/Witch_Magic.txt'),
+            loadlines('DeathMessages/Wolf.txt'),
+            loadlines('DeathMessages/Zombie.txt')
+        ]);
 }
 
 function loadlines(path){
