@@ -15,9 +15,7 @@ const prefix = config.PREFIX
 const second = 1000;
 const minute = second*60;
 
-//This is where all the bot replies will be parsed and read in. 
-
-
+// This is where all the bot replies will be parsed and read in. 
 let randommessage;
 let arrow;
 let cactus;
@@ -109,15 +107,18 @@ client.on('message', async message => {
 
     // Command Library
     if (isCommand) {
-        if (commands.hasOwnProperty(command)) {
-            const response = await commands[command](args, message);
-            
-            if (response) {
-                message.reply(response);
+        if (message.channel.id === '743335229137092718') {
+            if (commands.hasOwnProperty(command)) {
+                const response = await commands[command](args, message);
+                
+                if (response) {
+                    message.reply(response);
+                }
+            } else {
+                message.reply(`that's not a command you silly goose!`);
             }
-        } else {
-            message.reply(`that's not a command you silly goose!`);
         }
+            
     } else { // Test for other messages for specific applications.
         if (message.content.toLowerCase().includes(`good bot`)){
             message.channel.send("I know I am.");
