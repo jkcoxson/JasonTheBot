@@ -107,7 +107,7 @@ client.on('message', async message => {
 
     // Command Library
     if (isCommand) {
-        if (message.channel.id === '743335229137092718') {
+        if (message.channel.id === '744680352412467200') {
             if (commands.hasOwnProperty(command)) {
                 const response = await commands[command](args, message);
                 
@@ -183,7 +183,7 @@ function GoSubwaySandwich() {
                 }
                 console.log(`Final Output:    ${sender}: ${message}`)
                 if (sender!=="JasonTheBot"){
-                    client.channels.cache.get("706625332941160498").send(`${sender}: ${message}`);
+                    client.channels.cache.get("744680352412467200").send(`${sender}: ${message}`);
                 }
                 
 
@@ -277,7 +277,7 @@ function GoSubwaySandwich() {
                 }
                 
                 let toSend = `${sender} ${message}`
-                client.channels.cache.get("706625332941160498").send(toSend);
+                client.channels.cache.get("744680352412467200").send(toSend);
 
             }
         }
