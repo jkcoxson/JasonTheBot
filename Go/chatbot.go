@@ -51,6 +51,7 @@ func Minecraft() {
 			text = text
 		}
 		if SendAvailable {
+			fmt.Println(ToSend)
 			conn.WritePacket(&packet.Text{
 				TextType: packet.TextTypeChat,
 				Message:  ToSend,

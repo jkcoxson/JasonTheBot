@@ -124,12 +124,7 @@ client.on('message', async message => {
         }
         
         if (message.channel.id==="706625332941160498"){
-            try {
-                chatbot_console.setEncoding("utf-8")
-                chatbot_console.stdin.write(`${message.author.username}: ${message.content}\n`)
-            }catch{
-
-            }
+            chatbot_console.stdin.write(`${message.author.username}: ${message.content}\n`)
             
         }
     }
@@ -202,6 +197,7 @@ function GoSubwaySandwich() {
                     return;
                     //Dito
                 }
+                
                 let messagearray=data.split(" ")
                 let sender=""
                 for (i =0; i<messagearray.length-1; i++){
