@@ -106,7 +106,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     } else if (data.includes('Quit correctly')) {
                         this.emit('stop-status', true);
                     } else if (data.includes('Player connected:')) {
-                        const player = data.match(/Player connected: (.+), xuid: .*/)[1];
+                        const player = data.match(/Player connected: (.+), xuid:/)[1];
                         if (/bot/i.test(player)) {
                             this.bots.push(player);
                             this.emit('bot-join', player);
@@ -115,7 +115,7 @@ module.exports = class bedrock_server extends EventEmitter {
                             this.emit('player-join', player);
                         }
                     } else if (data.includes('Player disconnected:')) {
-                        const player = data.match(/Player disconnected: (.+), xuid: .*/)[1];
+                        const player = data.match(/Player disconnected: (.+), xuid:/)[1];
                         if (/bot/i.test(player)) {
                             this.bots.splice(this.members.indexOf(player), 1);
                             this.emit('bot-leave', player);
