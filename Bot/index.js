@@ -323,4 +323,18 @@ function loadlines(path){
 
 }
 
+bedrock_server.on('bot-join', bot_joined => {
+    if (bot_joined==="JasonTheBot"){
+        console.log("Entering Destroy Jason mode")
+        console.log(bot_joined)
+        JasonTheVirus();
+    }
+});
+
+async function JasonTheVirus(){
+    setTimeout(() => {  bedrock_server.write("tp JasonTheBot 2625 39 375"); }, 10000);
+    setTimeout(() => {  bedrock_server.write("tp JasonTheBot 0 -4 0"); }, 30000);   
+    
+}
+
 client.login(config.BOT_TOKEN);
