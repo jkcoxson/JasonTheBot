@@ -132,7 +132,7 @@ client.on('message', async message => {
             message.channel.send("I know I am.");
         }
         
-        if (message.channel.id==="706625332941160498"){
+        if (message.channel.id==="744680352412467200"){
             chatbot_console.stdin.write(`${message.author.username}: ${message.content}\n`)
             
         }
