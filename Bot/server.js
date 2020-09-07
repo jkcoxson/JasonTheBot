@@ -224,7 +224,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     if (!(await this.BDS_running())) {
                         return `the game server isn't running anyways.`;
                     } else {
-                        if (this.members.length > 0 || this.bots.length > 0) {
+                        if (this.members.length > 0 || (this.bots.includes('JasonTheBot') ? this.bots.length > 1 : this.bots.length > 0)) {
                             return 'sorry, there are still players and/or bots connected, so no stopping the server for you.';
                         } else {
                             message.reply('attempting to stop the server.');
