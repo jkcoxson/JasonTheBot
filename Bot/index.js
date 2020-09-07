@@ -206,6 +206,10 @@ function GoSubwaySandwich() {
                     return;
                     //Dito
                 }
+                if (data.includes("§e%")){
+                    return;
+                    //At some point I will make this the sleep system.
+                }
                 
                 let messagearray=data.split(" ")
                 let sender=""
@@ -268,7 +272,10 @@ function GoSubwaySandwich() {
                 }
                 
                 let toSend = `${sender} ${message}`
-                client.channels.cache.get("744680352412467200").send(toSend);
+                if (sender!=="JasonTheBot"){
+                    client.channels.cache.get("744680352412467200").send(toSend);
+                }
+                
 
             }
         }

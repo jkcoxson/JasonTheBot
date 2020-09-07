@@ -50,6 +50,11 @@ func Minecraft() {
 			fmt.Println()
 			text = text
 		}
+		if text, ok := pk.(*packet.SetTime); ok {
+			fmt.Printf("%#v\n", pk)
+			fmt.Println()
+			text = text
+		}
 		if SendAvailable {
 			fmt.Println(ToSend)
 			conn.WritePacket(&packet.Text{
