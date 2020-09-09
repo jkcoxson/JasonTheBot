@@ -21,7 +21,7 @@ load_random_lines();
 
 // Global fun
 const bedrock_server = new (require('./server.js'))();
-let jason = new (require('./jason.js'))();
+let jason = new (require('./jason.js'))(bedrock_server);
 set_up_discord_proxy(client, bedrock_server, jason);
 
 const commands = {
