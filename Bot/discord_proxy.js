@@ -59,14 +59,14 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
     });
     
     jason.on('player-death', (player_dead, reason) => {
-        if (sender !== 'JasonTheBot') {
+        if (player_dead !== 'JasonTheBot') {
             let message;
             if (reason === '' || !death_messages.hasOwnProperty(reason)) {
                 message = 'died.';
             } else {
                 message = death_messages[reason][Math.floor(Math.random() * death_messages[reason].length)];
             }
-            client.channels.cache.get(channels['minecraft-chat']).send(`${player_dead} message`);
+            client.channels.cache.get(channels['minecraft-chat']).send(`${player_dead} ${message}`);
         }
     });
 }

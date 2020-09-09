@@ -166,7 +166,9 @@ module.exports = class bedrock_server extends EventEmitter {
     }
 
     write(content) {
-        this.#BDS_process.stdin.write(`${content}\n`);
+        if (this.#BDS_process) {
+            this.#BDS_process.stdin.write(`${content}\n`);
+        }
     }
 
     async command(args, message) {
