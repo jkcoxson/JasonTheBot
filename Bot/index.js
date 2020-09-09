@@ -133,7 +133,7 @@ client.on('message', async message => {
         }
         
         if (message.channel.id==="744680352412467200"){
-            chatbot_console.stdin.write(`${message.author.username}: ${message.content}\n`)
+            chatbot_console.stdin.write(`§c${message.author.username}: ${message.content}\n`)
             
         }
     }
@@ -191,7 +191,7 @@ function GoSubwaySandwich() {
                 }
                 console.log(`Final Output:    ${sender}: ${message}`)
                 if (sender!=="JasonTheBot"){
-                    client.channels.cache.get("744680352412467200").send(`${sender}: ${message}`);
+                    client.channels.cache.get("744680352412467200").send(`**${sender}**: ${message}`);
                 }
                 
 
