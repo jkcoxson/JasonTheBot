@@ -54,7 +54,6 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
 
     jason.on('chat', (sender, message) => {
         if (sender !== 'JasonTheBot') {
-            client.channels.cache.get("744680352412467200").send(toSend);
             client.channels.cache.get(channels['minecraft-chat']).send(`**${sender}**: ${message}`);
         }
     });

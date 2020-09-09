@@ -12,6 +12,7 @@ module.exports = class jason_bot extends EventEmitter {
         this.#bedrock_server = bedrock_server;
 
         this.#bedrock_server.on('start', () => {
+            this.#attempt_reconnect = true;
             this.GoSubwaySandwich();
         });
 
@@ -53,7 +54,7 @@ module.exports = class jason_bot extends EventEmitter {
 
         setTimeout(() => {
             this.#bedrock_server.write('tp JasonTheBot 0 -4 0');
-        }, 30000);   
+        }, 30000);
     }
     
     GoSubwaySandwich() {
@@ -96,6 +97,7 @@ module.exports = class jason_bot extends EventEmitter {
                         return;
                     } else if (data.split(':')[1].startsWith('0x2')) {
                         if (data.includes('§e%')) {
+                            // this.emit('player-sleep', player_sleeping);
                             return;
                             // At some point I will make this the sleep system.
                         }

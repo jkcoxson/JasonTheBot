@@ -17,7 +17,7 @@ module.exports = class bedrock_server extends EventEmitter {
 
     constructor() {
         super();
-
+        
         this.#server_ip = config.server_ip;
         this.#ssh_user = config.ssh_user;
         this.#program_path = config.bedrock_process_path;
@@ -82,7 +82,7 @@ module.exports = class bedrock_server extends EventEmitter {
             });
             this.#BDS_process.on('exit', (code, signal) => {
                 socket.end();
-            })
+            });
         });
         this.#BDS_process.on('exit', (code, signal) => {
             this.#tcp_server.close();
@@ -171,7 +171,7 @@ module.exports = class bedrock_server extends EventEmitter {
 
     async command(args, message) {
         switch (args[0]) {
-            case 'server':
+            case 'running':
             case 'power': // Fallthrough intentional here
                 return '`server power` and `server running` have been replaced with one command, `server status`.'
                 break;
@@ -213,7 +213,6 @@ module.exports = class bedrock_server extends EventEmitter {
                             return `the server didn't start successfully.`;
                         }
                     }
-                    
                 }
                 break;
             case 'stop':
@@ -235,7 +234,6 @@ module.exports = class bedrock_server extends EventEmitter {
                             }
                         }
                     }
-                    
                 }
                 break;
             default:
