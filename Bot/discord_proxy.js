@@ -40,7 +40,7 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
         if (message.author.bot) return;
         
         if (message.channel.id === channels['minecraft-chat']) {
-            jason.chat(`${message.author.username}: ${message.content}\n`);
+            jason.chat(`§c${message.author.username}: ${message.content}\n`);
         }
     });
 
@@ -54,7 +54,8 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
 
     jason.on('chat', (sender, message) => {
         if (sender !== 'JasonTheBot') {
-            client.channels.cache.get(channels['minecraft-chat']).send(`${sender}: ${message}`);
+            client.channels.cache.get("744680352412467200").send(toSend);
+            client.channels.cache.get(channels['minecraft-chat']).send(`**${sender}**: ${message}`);
         }
     });
     
