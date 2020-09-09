@@ -7,6 +7,8 @@ module.exports = class jason_bot extends EventEmitter {
     #attempt_reconnect;
 
     constructor(bedrock_server) {
+        super();
+
         this.#bedrock_server = bedrock_server;
 
         this.#bedrock_server.on('start', () => {
