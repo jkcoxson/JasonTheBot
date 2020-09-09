@@ -58,11 +58,11 @@ module.exports = class jason_bot extends EventEmitter {
     }
     
     GoSubwaySandwich() {
-        if (!chatbot_console) {
-            chatbot_console = child_process.spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
-            chatbot_console.stdin.setEncoding('utf-8');
-            chatbot_console.stdout.setEncoding('utf-8');
-            chatbot_console.stdout.on('data', data => {
+        if (!this.#jason_process) {
+            this.#jason_process = child_process.spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
+            this.#jason_process.stdin.setEncoding('utf-8');
+            this.#jason_process.stdout.setEncoding('utf-8');
+            this.#jason_process.stdout.on('data', data => {
                 // Start parsing the string
                 if ((data.split(':')[1]) !== undefined) {
                     if (data.split(':')[1].startsWith('0x1')) { // Chat message
