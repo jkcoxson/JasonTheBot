@@ -2,8 +2,7 @@ const child_process = require('child_process');
 const path = require('path');
 const { EventEmitter } = require('events');
 const net = require('net');
-const config = require('./bedrock_server.config.json');
-const { resolve } = require('path');
+const config = require('./configs/bedrock_server.config.json');
 
 module.exports = class bedrock_server extends EventEmitter {
     #BDS_process;
@@ -143,6 +142,7 @@ module.exports = class bedrock_server extends EventEmitter {
     }
 
     stop() {
+        this.emit('stopping');
         return new Promise((resolve, reject) => {
             if (this.#BDS_process) {
                 this.write('stop');
