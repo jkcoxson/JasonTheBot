@@ -40,7 +40,7 @@ module.exports = class jason_bot extends EventEmitter {
     }
 
     chat(message) {
-        this.#jason_process.stdin.write(message);
+        this.#jason_process.stdin.write(`${message}\n`);
     }
 
     // IMPLEMENTATION:
