@@ -273,7 +273,9 @@ function GoSubwaySandwich() {
                 
                 let toSend = `${sender} ${message}`
                 if (sender!=="JasonTheBot"){
-                    client.channels.cache.get("744680352412467200").send(toSend);
+                    if (!data.includes("§e%")){
+                        client.channels.cache.get("744680352412467200").send(toSend); 
+                    }
                 }
                 
 
