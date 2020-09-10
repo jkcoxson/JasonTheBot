@@ -45,16 +45,16 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
     });
 
     bedrock_server.on('player-join', player_joined => {
-        client.channels.cache.get(channels['minecraft-chat']).send(`${player_joined} joined the game!  :smiley:`);
+        discord_client.channels.cache.get(channels['minecraft-chat']).send(`${player_joined} joined the game!  :smiley:`);
     });
     
     bedrock_server.on('player-leave', player_left => {
-        client.channels.cache.get(channels['minecraft-chat']).send(`${player_left} left the game  :cry:`);
+        discord_client.channels.cache.get(channels['minecraft-chat']).send(`${player_left} left the game  :cry:`);
     });
 
     jason.on('chat', (sender, message) => {
         if (sender !== 'JasonTheBot') {
-            client.channels.cache.get(channels['minecraft-chat']).send(`**${sender}**: ${message}`);
+            discord_client.channels.cache.get(channels['minecraft-chat']).send(`**${sender}**: ${message}`);
         }
     });
     
@@ -66,7 +66,7 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
             } else {
                 message = death_messages[reason][Math.floor(Math.random() * death_messages[reason].length)];
             }
-            client.channels.cache.get(channels['minecraft-chat']).send(`${player_dead} ${message}`);
+            discord_client.channels.cache.get(channels['minecraft-chat']).send(`${player_dead} ${message}`);
         }
     });
 }
