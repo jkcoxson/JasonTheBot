@@ -44,14 +44,6 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
         }
     });
 
-    bedrock_server.on('player-join', player_joined => {
-        discord_client.channels.cache.get(channels['minecraft-chat']).send(`${player_joined} joined the game!  :smiley:`);
-    });
-    
-    bedrock_server.on('player-leave', player_left => {
-        discord_client.channels.cache.get(channels['minecraft-chat']).send(`${player_left} left the game  :cry:`);
-    });
-
     jason.on('chat', (sender, message) => {
         if (sender !== 'JasonTheBot') {
             discord_client.channels.cache.get(channels['minecraft-chat']).send(`**${sender}**: ${message}`);
