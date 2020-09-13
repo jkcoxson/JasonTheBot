@@ -36,7 +36,10 @@ client.on('message', async message => {
     // Replies must start with lower case, as Discord.js formats
     // replies as @User, ${message}.
 
-    if (message.content.startsWith(prefix) && message.channel.id === channels["bot-commands"]) {
+    if (message.content.startsWith(prefix)) {
+        if (message.channel.id === channels["bot-commands"] && message.guild.id === "743322271355240488"){
+            break;
+        }
         const commandBody = message.content.slice(prefix.length); // Remove the prefix
         const args = commandBody.split(' '); // Split the message into array
         const command = args.shift().toLowerCase(); // Remove first from command and lower all 
