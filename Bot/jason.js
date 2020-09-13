@@ -68,17 +68,15 @@ module.exports = class jason_bot extends EventEmitter {
             this.#jason_process.stdout.pipe(stdout);
             this.#jason_process.stderr.pipe(stdout);
             this.#jason_process.stdout.on('data', data => {
-                if (data.includes('Chat: ')) {
-                    const match = data.match(/^Chat: {(.+)}: (.*)\n$/);
-                    const sender = match[1];
-                    const message = match[2];
-                    this.emit('chat', sender, message);
-                } else if (data.includes('Sleeping: ')) {
-                    const player_sleeping = data.match(/^Sleeping: {(.+)}\n$/)[1];
-                    this.emit('player-sleeping', player_sleeping);
-                } else if (data.includes('Death: ')) {
-                    const player_dead = data.match(/^Death: {(.+)}\n$/)[1];
-                    this.emit('player-death', player_dead);
+                const chat_match = data.match(/^Chat: {(.+)}: (.*)\n$/);
+                const sleeping_match = data.match(/^Sleeping: {(.+)}\n$/);
+                const death_match = data.match(/^Death: {(.+)}\n$/);
+                if (chat_match) {
+                    this.emit('chat', chat_match[1], chat_match[2]);
+                } else if (sleeping_match) {
+                    this.emit('player-sleeping', sleeping_match[1]);
+                } else if (death_match) {
+                    this.emit('player-death', death_match[1]);
                 }
             });
         }
