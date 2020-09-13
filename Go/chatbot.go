@@ -14,20 +14,7 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
-var sendAvailable = false
-var toSend = ""
-var garbagecollector = ""
-
 func main() {
-	go joinMinecraftServer()
-	go buffalo()
-	for {
-		time.Sleep(1000)
-	}
-
-}
-
-func joinMinecraftServer() {
 	// Connect to the server.
 	conn, err := minecraft.Dialer{
 		IdentityData: login.IdentityData{
@@ -47,46 +34,50 @@ func joinMinecraftServer() {
 	// Close the connection when we exit
 	defer conn.Close()
 
-	// Read and write packets forever and ever
+	go literacy(conn)
+	go buffalo(conn)
+
+	for {
+		time.Sleep(time.Second)
+	}
+}
+
+func literacy(conn *minecraft.Conn) {
+	// Read packets forever and ever
 	for {
 		// Example: Read a packet from the connection.
 		pk, err := conn.ReadPacket()
-		if text, ok := pk.(*packet.Text); ok {
-			switch text.TextType {
-			case packet.TextTypeChat:
-				if text.SourceName != "JasonTheBot" {
-					fmt.Printf("Chat: {%s}: %s\n", text.SourceName, text.Message)
-				}
-			case packet.TextTypeTranslation:
-				if text.Message == "chat.type.sleeping" {
-					fmt.Printf("Sleeping: {%s}\n", text.Parameters[0])
-				} else if strings.HasPrefix(text.Message, "death") {
-					fmt.Printf("Death: {%s}\n", text.Parameters[0])
-				}
-			}
-		}
-		if sendAvailable {
-			fmt.Println(toSend)
-			conn.WritePacket(&packet.Text{
-				TextType: packet.TextTypeChat,
-				Message:  toSend,
-			})
-			sendAvailable = false
-		}
-
 		if err != nil {
 			break
+		}
+		if text, isTextPacket := pk.(*packet.Text); isTextPacket {
+			switch text.TextType {
+				case packet.TextTypeChat:
+					if text.SourceName != "JasonTheBot" {
+						fmt.Printf("Chat: {%s}: %s\n", text.SourceName, text.Message)
+					}
+				case packet.TextTypeTranslation:
+					if text.Message == "chat.type.sleeping" {
+						fmt.Printf("Sleeping: {%s}\n", text.Parameters[0])
+					} else if strings.HasPrefix(text.Message, "death") {
+						fmt.Printf("Death: {%s}\n", text.Parameters[0])
+					}
+			}
 		}
 	}
 }
 
-func buffalo() {
+func buffalo(conn *minecraft.Conn) {
+	// Read from stdin and chat it
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		sendAvailable = true
-		toSend = scanner.Text()
+		conn.WritePacket(&packet.Text{
+			TextType: packet.TextTypeChat,
+			Message: scanner.Text(),
+		})
 	}
 
+	// Log errors
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
 	}
