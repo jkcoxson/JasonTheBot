@@ -5,7 +5,7 @@ module.exports = function set_up_discord_proxy(discord_client, bedrock_server, j
         if (message.author.bot) return;
         
         if (message.channel.id === channels['minecraft-chat']) {
-            jason.chat(`§c${message.author.username}: ${message.content}\n`);
+            jason.chat(`§b${message.author.username}§f: ${message.content}\n`);
         }
     });
 

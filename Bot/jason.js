@@ -44,7 +44,9 @@ module.exports = class jason_bot extends EventEmitter {
     }
 
     chat(message) {
-        this.#jason_process.stdin.write(`${message}\n`);
+        if (this.#jason_process) {
+            this.#jason_process.stdin.write(message);
+        }
     }
 
     // IMPLEMENTATION:
@@ -64,9 +66,12 @@ module.exports = class jason_bot extends EventEmitter {
             this.#jason_process.stdin.setEncoding('utf-8');
             this.#jason_process.stdout.setEncoding('utf-8');
             this.#jason_process.stdout.pipe(stdout);
+            this.#jason_process.stderr.pipe(stdout);
             this.#jason_process.stdout.on('data', data => {
                 if (data.includes('Chat: ')) {
-                    const [_, sender, message, ...__] = data.match(/^Chat: {(.+)}: (.*)\n$/);
+                    const match = data.match(/^Chat: {(.+)}: (.*)\n$/);
+                    const sender = match[1];
+                    const message = match[2];
                     this.emit('chat', sender, message);
                 } else if (data.includes('Sleeping: ')) {
                     const player_sleeping = data.match(/^Sleeping: {(.+)}\n$/)[1];
