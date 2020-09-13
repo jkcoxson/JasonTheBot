@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -12,21 +13,19 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
-var SendAvailable = false
-var ToSend = ""
-var garbagecollector = ""
+var sendAvailable = false
+var toSend = ""
 
 func main() {
-	go Minecraft()
-	go Buffalo()
+	go connectToServer()
+	go buffalo()
 	for {
 		time.Sleep(1000)
 	}
 
 }
 
-func Minecraft() {
-	//fmt.Println("Ran Minecraft")
+func connectToServer() {
 	// Connect to the server.
 	conn, err := minecraft.Dialer{
 		IdentityData: login.IdentityData{
@@ -37,50 +36,50 @@ func Minecraft() {
 	if err != nil {
 		panic(err)
 	}
+
 	// Make the client spawn in the world.
 	if err := conn.DoSpawn(); err != nil {
 		panic(err)
 	}
+
+	// Close the connection when the program exits
 	defer conn.Close()
+
+	// Read and write packets for ever and ever
 	for {
 		// Example: Read a packet from the connection.
 		pk, err := conn.ReadPacket()
+		if err != nil {
+			panic(err)
+		}
+
 		if text, ok := pk.(*packet.Text); ok {
-			fmt.Printf("%#v\n", pk)
-			fmt.Println()
-			text = text
+			switch text.TextType {
+			case packet.TextTypeChat:
+				fmt.Printf("Chat: {%s}: %s\n", text.SourceName, text.Message)
+			case packet.TextTypeTranslation:
+				if text.Message == "chat.type.sleeping" {
+					fmt.Printf("Sleeping: {%s}\n", text.Parameters[0])
+				} else if strings.HasPrefix(text.Message, "death") {
+					fmt.Printf("Death: {%s}\n", text.Parameters[0])
+				}
+			}
 		}
-		if text, ok := pk.(*packet.SetTime); ok {
-			fmt.Printf("%#v\n", pk)
-			fmt.Println()
-			text = text
-		}
-		if SendAvailable {
-			fmt.Println(ToSend)
+
+		if sendAvailable {
 			conn.WritePacket(&packet.Text{
 				TextType: packet.TextTypeChat,
-				Message:  ToSend,
+				Message:  toSend,
 			})
-			SendAvailable = false
-		}
-
-		if err != nil {
-			break
-		}
-
-		// Example: Send a packet to the server in response to the previous packet.
-		if err := conn.WritePacket(&packet.RequestChunkRadius{ChunkRadius: 32}); err != nil {
-			break
+			sendAvailable = false
 		}
 	}
 }
-func Buffalo() {
+
+func buffalo() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		SendAvailable = true
-		ToSend = scanner.Text()
-	}
-	if err := scanner.Err(); err != nil {
-		//log.Println(err)
+		sendAvailable = true
+		toSend = scanner.Text()
 	}
 }

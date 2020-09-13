@@ -63,105 +63,15 @@ module.exports = class jason_bot extends EventEmitter {
             this.#jason_process.stdin.setEncoding('utf-8');
             this.#jason_process.stdout.setEncoding('utf-8');
             this.#jason_process.stdout.on('data', data => {
-                // Start parsing the string
-                if ((data.split(':')[1]) !== undefined) {
-                    if (data.split(':')[1].startsWith('0x1')) { // Chat message
-                        let messagearray = data.split(' ');
-                        let sender = '';
-                        let message = '';
-        
-                        for (let i = 0; i < messagearray.length - 1; i++) {
-                            if (messagearray[i].startsWith('SourceName:')) {
-                                if (sender === '') {
-                                    sender = messagearray[i].substr(12, messagearray[i].length - 1);
-                                    sender = sender.substr(0, sender.length - 2);
-                                }
-                            } else if (messagearray[i].startsWith('Message:')) {
-                                if (message === '') {
-                                    message = messagearray[i].substr(9, messagearray[i].length - 1);
-                                    let endfound = false;
-                                    let endfinder = 1;
-                                    while (!endfound) {
-                                        if (messagearray[i + endfinder].startsWith('Parameters:')){
-                                            endfound = true;
-                                        } else {
-                                            message = message + ' ' + messagearray[i + endfinder]
-                                        }
-                                        endfinder++;
-                                    }
-                                    message = message.substr(0, message.length - 2);
-                                }
-                            }
-                        }
-                        this.emit('chat', sender, message);
-                        return;
-                    } else if (data.split(':')[1].startsWith('0x2')) {
-                        if (data.includes('§e%')) {
-                            // this.emit('player-sleep', player_sleeping);
-                            return;
-                            // At some point I will make this the sleep system.
-                        }
-                        
-                        // Death message
-                        let messagearray = data.split(' ');
-                        let player_dead = '';
-                        for (let i = 0; i < messagearray.length - 1; i++) {
-                            if (messagearray[i].startsWith('Parameters:[]string')) {
-                                player_dead = messagearray[i].substr(21, messagearray[i].length - 1);
-                                player_dead = player_dead.substr(0, player_dead.length - 2);
-                                if (player_dead.endsWith('"')) {
-                                    player_dead = player_dead.substr(0, player_dead.length - 1);
-                                }
-                            }
-                        }
-                        let reason = '';
-                        if (data.includes('entity.arrow.name')) {
-                            reason = 'arrow';
-                        } else if (data.includes('death.attack.cactus')) {
-                            reason = 'cactus';
-                        } else if (data.includes('death.attack.explosion.player')) {
-                            if (data.includes('entity.creeper.name')) {
-                                reason = 'creeper';
-                            } else {
-                                reason = 'tnt';
-                            }
-                        } else if (data.includes('death.attack.drown')) {
-                            reason = 'drown';
-                        } else if (data.includes('entity.drowned.name')) {
-                            reason = 'drowned';
-                        } else if (data.includes('entity.ender_dragon.name')) {
-                            if (data.includes('indirectMagic')) {
-                                reason = 'ender_dragon_magic';
-                            } else {
-                                reason = 'ender_dragon';
-                            }
-                        } else if (data.includes('entity.enderman.name')) {
-                            reason = 'enderman';
-                        } else if (data.includes('death.attack.fall')) {
-                            reason = 'fall';
-                        } else if (data.includes('death.attack.lava')) {
-                            reason = 'lava';
-                        } else if (data.includes('entity.llama.name')) {
-                            reason = 'llama';
-                        } else if (data.includes('entity.shulker_bullet.name')) {
-                            reason = 'shulker';
-                        } else if (data.includes('entity.spider.name')) {
-                            reason = 'spider';
-                        } else if (data.includes('death.attack.inWall')) {
-                            reason = 'suffocate';
-                        } else if (data.includes('death.attack.outOfWorld')) {
-                            reason = 'fallvoid';
-                        } else if (data.includes('entity.witch.name')) {
-                            reason = 'witch_magic';
-                        } else if (data.includes('entity.wolf.name')) {
-                            reason = 'wolf';
-                        } else if (data.includes('entity.zombie.name')) {
-                            reason = 'zombie';
-                        }
-
-                        this.emit('player-death', player_dead, reason);
-                        return;
-                    }
+                if (data.contains('Chat: ')) {
+                    const [_, sender, message, ..._] = data.match(/^Chat: {(.+)}: (.*)\n$/);
+                    this.emit('chat', sender, message);
+                } else if (data.contains('Sleeping: ')) {
+                    const player_sleeping = data.match(/^Sleeping: {(.+)}\n$/)[1];
+                    this.emit('player-sleeping', player_sleeping);
+                } else if (data.contains('Death: ')) {
+                    const player_dead = data.match(/^Death: {(.+)}\n$/)[1];
+                    this.emit('player-death', player_dead);
                 }
             });
         }
