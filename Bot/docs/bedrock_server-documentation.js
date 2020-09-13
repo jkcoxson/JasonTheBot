@@ -1,61 +1,59 @@
 // Importing bedrock_server
-const bedrock_server = require('server.js').bedrock_server;
+const BDS_server = require('./server.js');
 
 // Instantiating a new bedrock_server
-const server = new bedrock_server();
-
-// Testing if the computer is on (shouldn't be needed by clients)
-const computer_on = await server.computer_on();
-
-// Testing if BDS is running (shouldn't be needed by clients)
-const BDS_running = await server.BDS_running();
+const bedrock_server = new BDS_server();
 
 // Start the server
-const successful_start = await server.start();
+const successful_start = await bedrock_server.start();
 
 // Stop the server
-const successful_stop = await server.stop();
+const successful_stop = await bedrock_server.stop();
 
 // Write to stdin of the server
-server.write('kill LimberHawk');
+bedrock_server.write('kill LimberHawk');
+
+// Discord command
+const response = await bedrock_server.command(args, message);
+message.reply(response);
 
 // See players currently connected to the server (it's an array)
-console.log(server.members);
+console.log(bedrock_server.members);
 
 // See bots currently connected to the server (it's an array)
-console.log(server.bots);
+console.log(bedrock_server.bots);
 
 // When server successfully starts
-server.on('start', () => {
+bedrock_server.on('start', () => {
     console.log('Server started');
 });
 
 // When server will stop
-server.on('stopping', () => {
+bedrock_server.on('stopping', () => {
     console.log('Server stopping');
 });
 
 // When server successfully quits
-server.on('stop', () => {
+bedrock_server.on('stop', () => {
     console.log('Server stopped');
 });
 
 // When player joins
-server.on('player-join', player_joined => {
+bedrock_server.on('player-join', player_joined => {
     console.log(player_joined);
 });
 
 // When player leaves
-server.on('player-leave', player_left => {
+bedrock_server.on('player-leave', player_left => {
     console.log(player_left);
 });
 
 // When bot joins
-server.on('bot-join', bot_joined => {
+bedrock_server.on('bot-join', bot_joined => {
     console.log(bot_joined);
 });
 
 // When bot leaves
-server.on('bot-leave', bot_left => {
+bedrock_server.on('bot-leave', bot_left => {
     console.log(bot_left);
 });

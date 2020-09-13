@@ -1,6 +1,7 @@
 const child_process = require('child_process');
 const { EventEmitter } = require('events');
 const { stdout } = require('process');
+const { is_bot } = require('./server');
 
 module.exports = class jason_bot extends EventEmitter {
     #bedrock_server;
@@ -70,11 +71,23 @@ module.exports = class jason_bot extends EventEmitter {
                 const sleeping_match = data.match(/^Sleeping: {(.+)}\n$/);
                 const death_match = data.match(/^Death: {(.+)}\n$/);
                 if (chat_match) {
-                    this.emit('chat', chat_match[1], chat_match[2]);
+                    if (/bot/i.test(chat_match[1])) {
+                        this.emit('bot-chat', chat_match[1], chat_match[2]);
+                    } else {
+                        this.emit('chat', chat_match[1], chat_match[2]);
+                    }
                 } else if (sleeping_match) {
-                    this.emit('player-sleeping', sleeping_match[1]);
+                    if (/bot/i.test(sleeping_match[1])) {
+                        this.emit('bot-sleeping', sleeping_match[1]);
+                    } else {
+                        this.emit('player-sleeping', sleeping_match[1]);
+                    }
                 } else if (death_match) {
-                    this.emit('player-death', death_match[1]);
+                    if (/bot/i.test(death_match[1])) {
+                        this.emit('bot-death', death_match[1]);
+                    } else {
+                        this.emit('player-death', death_match[1]);
+                    }
                 }
             });
         }
