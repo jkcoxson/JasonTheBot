@@ -66,7 +66,7 @@ module.exports = class jason_bot extends EventEmitter {
             this.#jason_process.stdout.pipe(stdout);
             this.#jason_process.stdout.on('data', data => {
                 if (data.contains('Chat: ')) {
-                    const [_, sender, message, ..._] = data.match(/^Chat: {(.+)}: (.*)\n$/);
+                    const [_, sender, message, ...__] = data.match(/^Chat: {(.+)}: (.*)\n$/);
                     this.emit('chat', sender, message);
                 } else if (data.contains('Sleeping: ')) {
                     const player_sleeping = data.match(/^Sleeping: {(.+)}\n$/)[1];
