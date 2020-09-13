@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 	"strings"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -79,7 +80,12 @@ func connectToServer() {
 func buffalo() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		sendAvailable = true
-		toSend = scanner.Text()
+		sendAvailable = true;
+		toSend = scanner.Text();
+		fmt.Printf("Sending %s\n", toSend)
+	}
+	
+	if err := scanner.Err(); err != nil {
+		log.Println(err)
 	}
 }
