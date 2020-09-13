@@ -1,3 +1,6 @@
+// Import Jason's code
+const jason_bot = require('./jason.js');
+
 // Instantiate Jason
 let jason = new jason_bot(bedrock_server);
 

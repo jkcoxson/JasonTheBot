@@ -1,5 +1,5 @@
 // Importing bedrock_server
-const BDS_server = require('server.js');
+const BDS_server = require('./server.js');
 
 // Instantiating a new bedrock_server
 const bedrock_server = new BDS_server();
