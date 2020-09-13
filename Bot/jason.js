@@ -1,5 +1,6 @@
 const child_process = require('child_process');
 const { EventEmitter } = require('events');
+const { stdout } = require('process');
 
 module.exports = class jason_bot extends EventEmitter {
     #bedrock_server;
@@ -62,6 +63,7 @@ module.exports = class jason_bot extends EventEmitter {
             this.#jason_process = child_process.spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
             this.#jason_process.stdin.setEncoding('utf-8');
             this.#jason_process.stdout.setEncoding('utf-8');
+            this.#jason_process.stdout.pipe(stdout);
             this.#jason_process.stdout.on('data', data => {
                 if (data.contains('Chat: ')) {
                     const [_, sender, message, ..._] = data.match(/^Chat: {(.+)}: (.*)\n$/);
