@@ -38,7 +38,7 @@ client.on('message', async message => {
 
     if (message.content.startsWith(prefix)) {
         if (message.channel.id === channels["bot-commands"] && message.guild.id === "743322271355240488"){
-            break;
+            return;
         }
         const commandBody = message.content.slice(prefix.length); // Remove the prefix
         const args = commandBody.split(' '); // Split the message into array
