@@ -142,7 +142,6 @@ module.exports = class bedrock_server extends EventEmitter {
     }
 
     stop() {
-        this.emit('stopping');
         return new Promise((resolve, reject) => {
             if (this.#BDS_process) {
                 this.write('stop');

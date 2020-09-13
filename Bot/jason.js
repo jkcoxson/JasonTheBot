@@ -4,7 +4,6 @@ const { EventEmitter } = require('events');
 module.exports = class jason_bot extends EventEmitter {
     #bedrock_server;
     #jason_process;
-    #attempt_reconnect;
 
     constructor(bedrock_server) {
         super();
@@ -12,7 +11,6 @@ module.exports = class jason_bot extends EventEmitter {
         this.#bedrock_server = bedrock_server;
 
         this.#bedrock_server.on('start', () => {
-            this.#attempt_reconnect = true;
             this.GoSubwaySandwich();
         });
 
@@ -24,22 +22,17 @@ module.exports = class jason_bot extends EventEmitter {
 
         this.#bedrock_server.on('bot-leave', bot_left => {
             if (bot_left === 'JasonTheBot') {
-                if (this.#attempt_reconnect) {
-                    // If the bot gets disconnected for whatever reason, kill it and try again.
-                    this.#jason_process.kill();
-                    this.#jason_process = null;
-                    this.GoSubwaySandwich();
-                }
+                // If the bot gets disconnected for whatever reason, kill it and try again.
+                this.#jason_process.kill();
+                this.#jason_process = null;
+                this.GoSubwaySandwich();
             }
         });
 
-        this.#bedrock_server.on('stopping', () => {
-            this.#attempt_reconnect = false;
-            if (this.#jason_process) {
-                this.#jason_process.kill();
-                this.#jason_process = null;
-            }
-        });
+        this.#bedrock_server.on('stop', () => {
+            this.#jason_process.kill();
+            this.#jason_process = null;
+        })
     }
 
     chat(message) {

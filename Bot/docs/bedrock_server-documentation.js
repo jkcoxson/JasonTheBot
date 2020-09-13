@@ -28,11 +28,6 @@ bedrock_server.on('start', () => {
     console.log('Server started');
 });
 
-// When server will stop
-bedrock_server.on('stopping', () => {
-    console.log('Server stopping');
-});
-
 // When server successfully quits
 bedrock_server.on('stop', () => {
     console.log('Server stopped');
