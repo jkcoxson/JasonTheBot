@@ -37,8 +37,10 @@ client.on('message', async message => {
     // replies as @User, ${message}.
 
     if (message.content.startsWith(prefix)) {
-        if (message.channel.id === channels["bot-commands"] && message.guild.id === "743322271355240488"){
-            return;
+        if (message.guild.id === "743322271355240488"){
+            if (message.channel.id !== channels["bot-commands"]){
+                return;
+            }
         }
         const commandBody = message.content.slice(prefix.length); // Remove the prefix
         const args = commandBody.split(' '); // Split the message into array
