@@ -45,7 +45,7 @@ module.exports = class bedrock_server extends EventEmitter {
             }
         } else {
             if (await this.BDS_running()) {
-                child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /T`);
                 console.log('The BDS SSH handle that Node owns is dead, but BDS is running on the computer. Killing BDS');
             }
         }
