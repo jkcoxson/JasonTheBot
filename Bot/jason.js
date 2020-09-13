@@ -65,13 +65,13 @@ module.exports = class jason_bot extends EventEmitter {
             this.#jason_process.stdout.setEncoding('utf-8');
             this.#jason_process.stdout.pipe(stdout);
             this.#jason_process.stdout.on('data', data => {
-                if (data.contains('Chat: ')) {
+                if (data.includes('Chat: ')) {
                     const [_, sender, message, ...__] = data.match(/^Chat: {(.+)}: (.*)\n$/);
                     this.emit('chat', sender, message);
-                } else if (data.contains('Sleeping: ')) {
+                } else if (data.includes('Sleeping: ')) {
                     const player_sleeping = data.match(/^Sleeping: {(.+)}\n$/)[1];
                     this.emit('player-sleeping', player_sleeping);
-                } else if (data.contains('Death: ')) {
+                } else if (data.includes('Death: ')) {
                     const player_dead = data.match(/^Death: {(.+)}\n$/)[1];
                     this.emit('player-death', player_dead);
                 }
