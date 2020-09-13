@@ -1,7 +1,5 @@
 const child_process = require('child_process');
 const { EventEmitter } = require('events');
-const { stdout } = require('process');
-const { is_bot } = require('./server');
 
 module.exports = class jason_bot extends EventEmitter {
     #bedrock_server;
