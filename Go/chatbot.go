@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 	"strings"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -13,21 +14,20 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
-var SendAvailable = false
-var ToSend = ""
+var sendAvailable = false
+var toSend = ""
 var garbagecollector = ""
 
 func main() {
-	go Minecraft()
-	go Buffalo()
+	go joinMinecraftServer()
+	go buffalo()
 	for {
 		time.Sleep(1000)
 	}
 
 }
 
-func Minecraft() {
-	//fmt.Println("Ran Minecraft")
+func joinMinecraftServer() {
 	// Connect to the server.
 	conn, err := minecraft.Dialer{
 		IdentityData: login.IdentityData{
@@ -38,11 +38,16 @@ func Minecraft() {
 	if err != nil {
 		panic(err)
 	}
+
 	// Make the client spawn in the world.
 	if err := conn.DoSpawn(); err != nil {
 		panic(err)
 	}
+
+	// Close the connection when we exit
 	defer conn.Close()
+
+	// Read and write packets forever and ever
 	for {
 		// Example: Read a packet from the connection.
 		pk, err := conn.ReadPacket()
@@ -58,13 +63,13 @@ func Minecraft() {
 				}
 			}
 		}
-		if SendAvailable {
-			fmt.Println(ToSend)
+		if sendAvailable {
+			fmt.Println(toSend)
 			conn.WritePacket(&packet.Text{
 				TextType: packet.TextTypeChat,
-				Message:  ToSend,
+				Message:  toSend,
 			})
-			SendAvailable = false
+			sendAvailable = false
 		}
 
 		if err != nil {
@@ -72,13 +77,15 @@ func Minecraft() {
 		}
 	}
 }
-func Buffalo() {
+
+func buffalo() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		SendAvailable = true
-		ToSend = scanner.Text()
+		sendAvailable = true
+		toSend = scanner.Text()
 	}
+
 	if err := scanner.Err(); err != nil {
-		//log.Println(err)
+		log.Println(err)
 	}
 }
