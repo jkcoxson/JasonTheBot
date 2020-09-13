@@ -54,7 +54,9 @@ func joinMinecraftServer() {
 		if text, ok := pk.(*packet.Text); ok {
 			switch text.TextType {
 			case packet.TextTypeChat:
-				fmt.Printf("Chat: {%s}: %s\n", text.SourceName, text.Message)
+				if text.SourceName != "JasonTheBot" {
+					fmt.Printf("Chat: {%s}: %s\n", text.SourceName, text.Message)
+				}
 			case packet.TextTypeTranslation:
 				if text.Message == "chat.type.sleeping" {
 					fmt.Printf("Sleeping: {%s}\n", text.Parameters[0])
