@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const config = require('./config.json');
 const channels = require('./configs/channel-ids.json');
 const guilds = require('./configs/guild-ids.json');
-const roles = require('./configs/role-ids.json');
+const set_up_death_counter = require('./death_counter.js');
 const is_head_honcho = require('./head_honcho.js');
 const loadlines = require('./loadlines.js');
 const set_up_discord_proxy = require('./discord_proxy.js');
@@ -26,6 +26,7 @@ load_random_lines();
 const bedrock_server = new (require('./server.js'))();
 let jason = new (require('./jason.js'))(bedrock_server);
 set_up_discord_proxy(client, bedrock_server, jason);
+set_up_death_counter(bedrock_server, jason);
 
 const commands = {
     server: bedrock_server.command.bind(bedrock_server)
