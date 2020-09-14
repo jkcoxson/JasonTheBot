@@ -4,6 +4,7 @@ const config = require('./config.json');
 const channels = require('./configs/channel-ids.json');
 const guilds = require('./configs/guild-ids.json');
 const roles = require('./configs/role-ids.json');
+const is_head_honcho = require('./head_honcho.js');
 const loadlines = require('./loadlines.js');
 const set_up_discord_proxy = require('./discord_proxy.js');
 let date = new Date();
@@ -42,7 +43,7 @@ client.on('message', async message => {
         (message.channel.id === channels["bot-commands"] ||
         message.guild.id === guilds["jacksons-test-server"])
     ) {
-        if (message.member.roles.cache.find(role => role.id === roles['sqad leader'])) {
+        if (is_head_honcho(message.member)) {
             console.log(`Head honcho talking: ${message.author.username}`);
         }
         const commandBody = message.content.slice(prefix.length); // Remove the prefix
