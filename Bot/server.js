@@ -33,12 +33,17 @@ module.exports = class bedrock_server extends EventEmitter {
         if (this.#BDS_process) {
             const [computer_on, BDS_running] = await Promise.all([this.computer_on(), this.BDS_running()]);
             if (!computer_on) {
-                this.stop();
+                this.#BDS_process.kill();
+                this.#BDS_process = null;
+                this.members.splice(0, this.members.length);
+                this.bots.splice(0, this.bots.length);
                 console.log('The computer is not on, killing the SSH BDS process in Node');
             } else {
                 if (!BDS_running) {
                     this.#BDS_process.kill();
                     this.#BDS_process = null;
+                    this.members.splice(0, this.members.length);
+                    this.bots.splice(0, this.bots.length);
                     this.start();
                     console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
                 }
