@@ -55,8 +55,6 @@ module.exports = class jason_bot extends EventEmitter {
     GoSubwaySandwich() {
         if (!this.#jason_process) {
             this.#jason_process = child_process.spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
-            this.#jason_process.stdin.setEncoding('utf-8');
-            this.#jason_process.stdout.setEncoding('utf-8');
             this.#jason_process.stdout.on('data', data => {
                 const chat_match = data.match(/^Chat: {(.+)}: (.*)\n$/);
                 const sleeping_match = data.match(/^Sleeping: {(.+)}\n$/);

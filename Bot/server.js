@@ -3,6 +3,9 @@ const path = require('path');
 const { EventEmitter } = require('events');
 const net = require('net');
 const config = require('./configs/bedrock_server.config.json');
+const process = require('process');
+const is_head_honcho = require('./head_honcho.js');
+const { resolve } = require('path');
 
 module.exports = class bedrock_server extends EventEmitter {
     #BDS_process;
@@ -26,34 +29,17 @@ module.exports = class bedrock_server extends EventEmitter {
         this.members = [];
         this.bots = [];
 
-        setInterval(this.check_handle.bind(this), 30000);
-    }
-
-    async check_handle() {
-        if (this.#BDS_process) {
-            const [computer_on, BDS_running] = await Promise.all([this.computer_on(), this.BDS_running()]);
-            if (!computer_on) {
-                this.#BDS_process.kill();
-                this.#BDS_process = null;
-                this.members.splice(0, this.members.length);
-                this.bots.splice(0, this.bots.length);
-                console.log('The computer is not on, killing the SSH BDS process in Node');
-            } else {
-                if (!BDS_running) {
-                    this.#BDS_process.kill();
-                    this.#BDS_process = null;
-                    this.members.splice(0, this.members.length);
-                    this.bots.splice(0, this.bots.length);
-                    this.start();
-                    console.log('Supposedly BDS is running over SSH, but it isn\'t running on the computer\nRestarting BDS over SSH');
-                }
+        process.stdin.on('data', data => {
+            if (data.includes('stop')) {
+                console.log('Stopping...');
+                this.write('stop');
+                this.once('stop-status', successful_stop => {
+                    if (successful_stop) {
+                        process.exit();
+                    }
+                });
             }
-        } else {
-            if (await this.BDS_running()) {
-                child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /F /T /IM "${path.basename(this.#program_path)}"`);
-                console.log('The BDS SSH handle that Node owns is dead, but BDS is running on the computer. Killing BDS');
-            }
-        }
+        });
     }
 
     computer_on() {
@@ -79,7 +65,6 @@ module.exports = class bedrock_server extends EventEmitter {
     start_TCP_server() {
         this.#tcp_server = net.createServer();
         this.#tcp_server.on('connection', socket => {
-            socket.setEncoding('utf-8');
             socket.pipe(this.#BDS_process.stdin);
             this.#BDS_process.stdout.pipe(socket);
             socket.on('error', error => {
@@ -100,8 +85,12 @@ module.exports = class bedrock_server extends EventEmitter {
             if (!this.#BDS_process) {
                 // Create BDS process
                 this.#BDS_process = child_process.spawn(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `"${this.#program_path}"`]);
-                this.#BDS_process.stdin.setEncoding('utf8');
-                this.#BDS_process.stdout.setEncoding('utf8');
+                this.#BDS_process.on('exit', (code, signal) => {
+                    this.#BDS_process = null;
+                    this.members.splice(0, this.members.length);
+                    this.bots.splice(0, this.bots.length);
+                    this.emit('stop');
+                });
                 this.#BDS_process.stdout.on('data', data => {
                     if (data.includes('Server started')) {
                         this.emit('start-status', true);
@@ -182,52 +171,52 @@ module.exports = class bedrock_server extends EventEmitter {
                 return '`server power` and `server running` have been replaced with one command, `server status`.'
                 break;
             case 'status':
-                await this.check_handle();
-                if (await this.computer_on()) {
-                    if (await this.BDS_running()) {
-                        let response = 'the server is currently running the game server.';
-                        if (this.members.length > 0) {
-                            response += `\nPlayers online: ${this.members.join(', ')}`;
-                        } else {
-                            response += '\nNo players online';
-                        }
-                        if (this.bots.length > 0) {
-                            response += `\nBots online: ${this.bots.join(', ')}`;
-                        } else {
-                            response += '\nNo bots online';
-                        }
-                        return response;
+                if (this.#BDS_process) {
+                    let response = 'the server is currently running the game server.';
+                    if (this.members.length > 0) {
+                        response += `\nPlayers online: ${this.members.join(', ')}`;
                     } else {
-                        return 'the server is on, but not running the game server.';
+                        response += '\nNo players online';
                     }
+                    if (this.bots.length > 0) {
+                        response += `\nBots online: ${this.bots.join(', ')}`;
+                    } else {
+                        response += '\nNo bots online';
+                    }
+                    return response;
                 } else {
-                    return 'the server is not currently on.';
+                    if (await this.computer_on()) {
+                        return 'the server is on, but not running the game server.';
+                    } else {
+                        return 'the server is not currently on.';
+                    }
                 }
                 break;
             case 'start':
-                await this.check_handle();
-                if (!(await this.computer_on())) {
-                    return 'the server is not powered on.';
+                if (this.#BDS_process) {
+                    return 'the game server is already running.';
                 } else {
-                    if (await this.BDS_running()) {
-                        return 'the game server is already running.';
-                    } else {
+                    if (await this.computer_on()) {
                         message.reply('attempting to start the server.');
                         if (await this.start()) {
                             return 'the server is now running.';
                         } else {
                             return `the server didn't start successfully.`;
                         }
+                    } else {
+                        return 'the server is not powered on.';
                     }
                 }
                 break;
             case 'stop':
-                await this.check_handle();
-                if (!(await this.computer_on())) {
-                    return `the server isn't powered on to begin with.`;
-                } else {
-                    if (!(await this.BDS_running())) {
-                        return `the game server isn't running in the first place.`;
+                if (this.#BDS_process) {
+                    if (is_head_honcho(message.member) && arr[1] === '--force') {
+                        message.reply('attempting to stop the server.');
+                        if (await this.stop()) {
+                            return 'the server is now stopped.';
+                        } else {
+                            return `the server didn't stop successfully.`;
+                        }
                     } else {
                         if (this.members.length > 0 || (this.bots.includes('JasonTheBot') ? this.bots.length > 1 : this.bots.length > 0)) {
                             return 'sorry, there are still players and/or bots connected, so no stopping the server for you.';
@@ -240,6 +229,25 @@ module.exports = class bedrock_server extends EventEmitter {
                             }
                         }
                     }
+                } else {
+                    if (await this.computer_on()) {
+                        return `the game server isn't running in the first place.`;
+                    } else {
+                        return `the server isn't powered on to begin with.`;
+                    }
+                }
+                break;
+            case 'kill':
+                if (is_head_honcho(message.member)) {
+                    exec(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `taskkill`, `/IM`, `"${path.basename(this.#program_path)}"`, `/F`], (error, stdout, stderr) => {
+                        if (error) {
+                            message.reply('termination unsuccessful.');
+                        } else {
+                            message.reply('server terminated.');
+                        }
+                    });
+                } else {
+                    return `you aren't allowed to use that command.`;
                 }
                 break;
             default:
