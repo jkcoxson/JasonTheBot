@@ -56,9 +56,10 @@ module.exports = class jason_bot extends EventEmitter {
         if (!this.#jason_process) {
             this.#jason_process = child_process.spawn(`/usr/local/go/bin/go`, [`run`,`/home/open/Documents/JasonTheBot/Go/chatbot.go`]);
             this.#jason_process.stdout.on('data', data => {
-                const chat_match = data.match(/^Chat: {(.+)}: (.*)\n$/);
-                const sleeping_match = data.match(/^Sleeping: {(.+)}\n$/);
-                const death_match = data.match(/^Death: {(.+)}\n$/);
+                data_str = data.toString();
+                const chat_match = data_str.match(/^Chat: {(.+)}: (.*)\n$/);
+                const sleeping_match = data_str.match(/^Sleeping: {(.+)}\n$/);
+                const death_match = data_str.match(/^Death: {(.+)}\n$/);
                 if (chat_match) {
                     if (/bot/i.test(chat_match[1])) {
                         this.emit('bot-chat', chat_match[1], chat_match[2]);

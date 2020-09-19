@@ -92,14 +92,15 @@ module.exports = class bedrock_server extends EventEmitter {
                     this.emit('stop');
                 });
                 this.#BDS_process.stdout.on('data', data => {
-                    if (data.includes('Server started')) {
+                    data_str = data.toString();
+                    if (data_str.includes('Server started')) {
                         this.emit('start-status', true);
-                    } else if (data.includes(`can't start server`)) {
+                    } else if (data_str.includes(`can't start server`)) {
                         this.emit('start-status', false);
-                    } else if (data.includes('Quit correctly')) {
+                    } else if (data_str.includes('Quit correctly')) {
                         this.emit('stop-status', true);
-                    } else if (data.includes('Player connected:')) {
-                        const player = data.match(/Player connected: (.+), xuid:/)[1];
+                    } else if (data_str.includes('Player connected:')) {
+                        const player = data_str.match(/Player connected: (.+), xuid:/)[1];
                         if (/bot/i.test(player)) {
                             this.bots.push(player);
                             this.emit('bot-join', player);
@@ -107,8 +108,8 @@ module.exports = class bedrock_server extends EventEmitter {
                             this.members.push(player);
                             this.emit('player-join', player);
                         }
-                    } else if (data.includes('Player disconnected:')) {
-                        const player = data.match(/Player disconnected: (.+), xuid:/)[1];
+                    } else if (data_str.includes('Player disconnected:')) {
+                        const player = data_str.match(/Player disconnected: (.+), xuid:/)[1];
                         if (/bot/i.test(player)) {
                             this.bots.splice(this.members.indexOf(player), 1);
                             this.emit('bot-leave', player);
