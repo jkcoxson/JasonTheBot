@@ -146,10 +146,6 @@ module.exports = class bedrock_server extends EventEmitter {
                     resolve(successful_stop);
                     if (successful_stop) {
                         this.#BDS_process.kill();
-                        this.#BDS_process = null;
-                        this.members.splice(0, this.members.length);
-                        this.bots.splice(0, this.bots.length);
-                        this.emit('stop');
                     }
                     return;
                 });
