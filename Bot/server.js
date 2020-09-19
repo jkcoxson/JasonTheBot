@@ -39,6 +39,8 @@ module.exports = class bedrock_server extends EventEmitter {
                             process.exit();
                         }
                     });
+                } else {
+                    process.exit();
                 }
             }
         });
