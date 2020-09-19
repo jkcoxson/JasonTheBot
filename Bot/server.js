@@ -238,7 +238,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 break;
             case 'kill':
                 if (is_head_honcho(message.member)) {
-                    exec(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `taskkill`, `/IM`, `"${path.basename(this.#program_path)}"`, `/F`], (error, stdout, stderr) => {
+                    child_process.exec(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `taskkill`, `/IM`, `"${path.basename(this.#program_path)}"`, `/F`], (error, stdout, stderr) => {
                         if (error) {
                             message.reply('termination unsuccessful.');
                         } else {
