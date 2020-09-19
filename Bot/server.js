@@ -32,12 +32,14 @@ module.exports = class bedrock_server extends EventEmitter {
         process.stdin.on('data', data => {
             if (data.includes('stop')) {
                 console.log('Stopping...');
-                this.write('stop');
-                this.once('stop-status', successful_stop => {
-                    if (successful_stop) {
-                        process.exit();
-                    }
-                });
+                if (this.#BDS_process) {
+                    this.write('stop');
+                    this.once('stop-status', successful_stop => {
+                        if (successful_stop) {
+                            process.exit();
+                        }
+                    });
+                }
             }
         });
     }
@@ -157,8 +159,7 @@ module.exports = class bedrock_server extends EventEmitter {
 
     write(content) {
         if (this.#BDS_process) {
-            console.log(content);
-            this.#BDS_process.stdin.write(Buffer.from(`${content}\n`));
+            this.#BDS_process.stdin.write(`${content}\n`);
         }
     }
 
