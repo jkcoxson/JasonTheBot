@@ -92,7 +92,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     this.emit('stop');
                 });
                 this.#BDS_process.stdout.on('data', data => {
-                    data_str = data.toString();
+                    const data_str = data.toString();
                     if (data_str.includes('Server started')) {
                         this.emit('start-status', true);
                     } else if (data_str.includes(`can't start server`)) {
