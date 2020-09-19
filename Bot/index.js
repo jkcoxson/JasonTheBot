@@ -34,7 +34,6 @@ const commands = {
 
 // Return to this code when a message is sent
 client.on('message', async message => {
-    // console.log(message);
     if (message.author.bot) return;
     
     // Replies must start with lower case, as Discord.js formats
@@ -44,9 +43,6 @@ client.on('message', async message => {
         (message.channel.id === channels["bot-commands"] ||
         message.guild.id === guilds["jacksons-test-server"])
     ) {
-        if (is_head_honcho(message.member)) {
-            console.log(`Head honcho talking: ${message.author.username}`);
-        }
         const commandBody = message.content.slice(prefix.length); // Remove the prefix
         const args = commandBody.split(' '); // Split the message into array
         const command = args.shift().toLowerCase(); // Remove first from command and lower all 
