@@ -157,6 +157,7 @@ module.exports = class bedrock_server extends EventEmitter {
 
     write(content) {
         if (this.#BDS_process) {
+            console.log(content);
             this.#BDS_process.stdin.write(`${content}\n`);
         }
     }
