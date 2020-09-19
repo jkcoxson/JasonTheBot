@@ -23,15 +23,19 @@ module.exports = class jason_bot extends EventEmitter {
         this.#bedrock_server.on('bot-leave', bot_left => {
             if (bot_left === 'JasonTheBot') {
                 // If the bot gets disconnected for whatever reason, kill it and try again.
-                this.#jason_process.kill();
-                this.#jason_process = null;
+                if (this.#jason_process) {
+                    this.#jason_process.kill();
+                    this.#jason_process = null;
+                }
                 this.GoSubwaySandwich();
             }
         });
 
         this.#bedrock_server.on('stop', () => {
-            this.#jason_process.kill();
-            this.#jason_process = null;
+            if (this.#jason_process) {
+                this.#jason_process.kill();
+                this.#jason_process = null;
+            }
         })
     }
 
