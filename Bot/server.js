@@ -211,7 +211,7 @@ module.exports = class bedrock_server extends EventEmitter {
                 break;
             case 'stop':
                 if (this.#BDS_process) {
-                    if (is_head_honcho(message.member) && arr[1] === '--force') {
+                    if (is_head_honcho(message.member) && args[1] === '--force') {
                         message.reply('attempting to stop the server.');
                         if (await this.stop()) {
                             return 'the server is now stopped.';
