@@ -7,6 +7,17 @@ const process = require('process');
 const is_head_honcho = require('./head_honcho.js');
 const { resolve } = require('path');
 
+function exec_promisify(command) {
+    return new Promise((resolve, reject) => {
+        child_process.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                return reject(error);
+            }
+            return resolve([stdout, stderr]);
+        });
+    });
+}
+
 module.exports = class bedrock_server extends EventEmitter {
     #BDS_process;
     #tcp_server;
@@ -188,7 +199,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     return response;
                 } else {
                     if (await this.computer_on()) {
-                        child_process.exec(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `taskkill`, `/IM`, `"${path.basename(this.#program_path)}"`, `/F`]);
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
                         return 'the server is on, but not running the game server.';
                     } else {
                         return 'the server is not currently on.';
@@ -200,7 +211,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     return 'the game server is already running.';
                 } else {
                     if (await this.computer_on()) {
-                        child_process.exec(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `taskkill`, `/IM`, `"${path.basename(this.#program_path)}"`, `/F`]);
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
                         message.reply('attempting to start the server.');
                         if (await this.start()) {
                             return 'the server is now running.';
@@ -235,7 +246,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     }
                 } else {
                     if (await this.computer_on()) {
-                        child_process.exec(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `taskkill`, `/IM`, `"${path.basename(this.#program_path)}"`, `/F`]);
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
                         return `the game server isn't running in the first place.`;
                     } else {
                         return `the server isn't powered on to begin with.`;
@@ -244,13 +255,12 @@ module.exports = class bedrock_server extends EventEmitter {
                 break;
             case 'kill':
                 if (is_head_honcho(message.member)) {
-                    child_process.exec(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `taskkill`, `/IM`, `"${path.basename(this.#program_path)}"`, `/F`], (error, stdout, stderr) => {
-                        if (error) {
-                            message.reply('termination unsuccessful.');
-                        } else {
-                            message.reply('server terminated.');
-                        }
-                    });
+                    try {
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                        return 'server terminated.';
+                    } catch (error) {
+                        return 'termination unsuccessful.';
+                    }
                 } else {
                     return `you aren't allowed to use that command.`;
                 }
