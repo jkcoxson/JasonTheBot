@@ -101,6 +101,7 @@ module.exports = class bedrock_server extends EventEmitter {
                         this.emit('start-status', true);
                     } else if (data_str.includes(`can't start server`)) {
                         this.emit('start-status', false);
+                        this.stop();
                     } else if (data_str.includes('Quit correctly')) {
                         this.emit('stop-status', true);
                     } else if (data_str.includes('Player connected:')) {
