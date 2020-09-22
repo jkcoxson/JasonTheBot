@@ -1,3 +1,50 @@
 {
-    "675178310959104000": ["LimberHawk42178"]
+    "discord_id_to_minecraft": {
+        "675178310959104000": ["LimberHawk42178"],
+        "430434656622739466": ["Candlex", "CandlexLTB", "Einse Algol"],
+        "359388294527582208": ["hibob5"],
+        "533530255172829184": ["WiiUGamertag200", "NintendoKid1511"],
+        "456290281592193036": ["Platinum49"]
+    },
+    "minecraft_to_discord_id": {
+        "LimberHawk42178": ["675178310959104000"],
+        "Candlex": ["430434656622739466"],
+        "CandlexLTB": ["430434656622739466"],
+        "Einse Algol": ["430434656622739466"],
+        "hibob5": ["359388294527582208"],
+        "WiiUGamertag200": ["533530255172829184"],
+        "NintendoKid1511": ["533530255172829184"],
+        "Platinum49": ["456290281592193036"]
+    },
+    "discord_id_to_name": {
+        "675178310959104000": ["Seth"],
+        "430434656622739466": ["Garry"],
+        "359388294527582208": ["Hayden"],
+        "533530255172829184": ["Jackson"],
+        "456290281592193036": ["Xander"]
+    },
+    "name_to_discord_id": {
+        "Seth": ["675178310959104000"],
+        "Garry": ["430434656622739466"],
+        "Hayden": ["359388294527582208"],
+        "Jackson": ["533530255172829184"],
+        "Xander": ["456290281592193036"]
+    },
+    "name_to_minecraft": {
+        "Seth": ["LimberHawk42178"],
+        "Garry": ["Candlex", "CandlexLTB", "Einse Algol"],
+        "Hayden": ["hibob5"],
+        "Jackson": ["WiiUGamertag200", "NintendoKid1511"],
+        "Xander": ["Platinum49"]
+    },
+    "minecraft_to_name": {
+        "LimberHawk42178": ["Seth"],
+        "Candlex": ["Garry"],
+        "CandlexLTB": ["Garry"],
+        "Einse Algol": ["Garry"],
+        "hibob5": ["Hayden"],
+        "WiiUGamertag200": ["Jackson"],
+        "NintendoKid1511": ["Jackson"],
+        "Platinum49": ["Xander"]
+    }
 }
