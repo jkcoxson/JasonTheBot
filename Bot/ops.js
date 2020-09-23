@@ -143,7 +143,7 @@ module.exports = class ops {
                             return `you can't disable the sleep system for a negative amount of time, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                         }
 
-                        if (mins_to_disable_for > 120) {
+                        if (mins_to_disable_for > 120 && !is_head_honcho(message.member)) {
                             this.#permissions_manager.disable_for(30);
                             this.#disabler = message.member;
                             return `you can't disable the sleep system for a more than 120 minutes, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
@@ -156,7 +156,7 @@ module.exports = class ops {
 
                     this.#permissions_manager.disable_for(30);
                     this.#disabler = message.member;
-                    return `I didn't get a number, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
+                    return `I didn't get a valid amount of time, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                 }
 
                 return `the server isn't running right now, so the sleep system can't be disabled.`
