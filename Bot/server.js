@@ -21,24 +21,18 @@ function exec_promisify(command) {
 module.exports = class bedrock_server extends EventEmitter {
     #BDS_process;
     #tcp_server;
-    #server_ip;
-    #ssh_user;
-    #program_path;
-    #TCP_proxy_port;
 
     members;
     bots;
+    config;
 
-    constructor() {
+    constructor(config) {
         super();
         
-        this.#server_ip = config.server_ip;
-        this.#ssh_user = config.ssh_user;
-        this.#program_path = config.bedrock_process_path;
-        this.#TCP_proxy_port = config.TCP_proxy_port;
-
         this.members = [];
         this.bots = [];
+
+        this.config = config;
 
         process.stdin.on('data', data => {
             if (data.includes('stop')) {
@@ -59,7 +53,7 @@ module.exports = class bedrock_server extends EventEmitter {
 
     computer_on() {
         return new Promise((resolve, reject) => {
-            child_process.exec(`ping ${this.#server_ip} -c 1`, (error, stdout, stderr) => {
+            child_process.exec(`ping ${this.config.server_ip} -c 1`, (error, stdout, stderr) => {
                 if (error) {
                     resolve(false);
                 } else {
@@ -71,8 +65,8 @@ module.exports = class bedrock_server extends EventEmitter {
 
     BDS_running() {
         return new Promise((resolve, reject) => {
-            child_process.exec(`ssh ${this.#ssh_user}@${this.#server_ip} tasklist`, (error, stdout, stderr) => {
-                resolve(stdout.includes(path.basename(this.#program_path)));
+            child_process.exec(`ssh ${this.config.ssh_user}@${this.config.server_ip} tasklist`, (error, stdout, stderr) => {
+                resolve(stdout.includes(path.basename(this.config.program_path)));
             });
         });
     }
@@ -92,14 +86,14 @@ module.exports = class bedrock_server extends EventEmitter {
         this.#BDS_process.on('exit', (code, signal) => {
             this.#tcp_server.close();
         });
-        this.#tcp_server.listen(this.#TCP_proxy_port);
+        this.#tcp_server.listen(this.config.TCP_pipe_port);
     }
 
     start() {
         return new Promise((resolve, reject) => {
             if (!this.#BDS_process) {
                 // Create BDS process
-                this.#BDS_process = child_process.spawn(`ssh`, [`${this.#ssh_user}@${this.#server_ip}`, `"${this.#program_path}"`]);
+                this.#BDS_process = child_process.spawn(`ssh`, [`${this.config.ssh_user}@${this.config.server_ip}`, `"${this.config.program_path}"`]);
                 this.#BDS_process.on('exit', (code, signal) => {
                     this.#BDS_process = null;
                     this.members.splice(0, this.members.length);
@@ -199,7 +193,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     return response;
                 } else {
                     if (await this.computer_on()) {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
+                        await exec_promisify(`ssh ${this.config.ssh_user}@${this.config.server_ip} taskkill /IM "${path.basename(this.config.program_path)}" /F`).catch(err => {});
                         return 'the server is on, but not running the game server.';
                     } else {
                         return 'the server is not currently on.';
@@ -211,7 +205,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     return 'the game server is already running.';
                 } else {
                     if (await this.computer_on()) {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
+                        await exec_promisify(`ssh ${this.config.ssh_user}@${this.config.server_ip} taskkill /IM "${path.basename(this.config.program_path)}" /F`).catch(err => {});
                         message.reply('attempting to start the server.');
                         if (await this.start()) {
                             return 'the server is now running.';
@@ -246,7 +240,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     }
                 } else {
                     if (await this.computer_on()) {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
+                        await exec_promisify(`ssh ${this.config.ssh_user}@${this.config.server_ip} taskkill /IM "${path.basename(this.config.program_path)}" /F`).catch(err => {});
                         return `the game server isn't running in the first place.`;
                     } else {
                         return `the server isn't powered on to begin with.`;
@@ -256,7 +250,7 @@ module.exports = class bedrock_server extends EventEmitter {
             case 'kill':
                 if (is_head_honcho(message.member)) {
                     try {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
+                        await exec_promisify(`ssh ${this.config.ssh_user}@${this.config.server_ip} taskkill /IM "${path.basename(this.config.program_path)}" /F`).catch(err => {});
                         return 'server terminated.';
                     } catch (error) {
                         return 'termination unsuccessful.';

@@ -23,7 +23,12 @@ load_random_lines();
 ///////////////////////////////////////////////////////
 
 // Global fun
-const bedrock_server = new (require('./server.js'))();
+const bedrock_server = new (require('./server.js'))({
+    server_ip: "192.168.1.7",
+    ssh_user: "jackson",
+    program_path: "c:/Users/Jackson/Desktop/Minecraft_Server/Survival/bedrock_server.exe",
+    TCP_pipe_port: 12345
+});
 const jason = new (require('./jason.js'))(bedrock_server);
 set_up_discord_proxy(client, bedrock_server, jason);
 set_up_death_counter(bedrock_server, jason);
