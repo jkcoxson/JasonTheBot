@@ -30,7 +30,8 @@ set_up_death_counter(bedrock_server, jason);
 const ops_system = new (require('./ops.js'))(bedrock_server, jason);
 
 const commands = {
-    server: bedrock_server.command.bind(bedrock_server)
+    server: bedrock_server.command.bind(bedrock_server),
+    ops: ops_system.command.bind(ops_system)
 };
 
 // Return to this code when a message is sent
