@@ -24,9 +24,10 @@ load_random_lines();
 
 // Global fun
 const bedrock_server = new (require('./server.js'))();
-let jason = new (require('./jason.js'))(bedrock_server);
+const jason = new (require('./jason.js'))(bedrock_server);
 set_up_discord_proxy(client, bedrock_server, jason);
 set_up_death_counter(bedrock_server, jason);
+const ops_system = new (require('./ops.js'))(bedrock_server, jason);
 
 const commands = {
     server: bedrock_server.command.bind(bedrock_server)
