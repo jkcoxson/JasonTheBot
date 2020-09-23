@@ -270,4 +270,8 @@ module.exports = class bedrock_server extends EventEmitter {
                 break;
         }
     }
+
+    running() {
+        return Boolean(this.#BDS_process);
+    }
 }

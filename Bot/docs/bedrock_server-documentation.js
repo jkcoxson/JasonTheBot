@@ -52,3 +52,10 @@ bedrock_server.on('bot-join', bot_joined => {
 bedrock_server.on('bot-leave', bot_left => {
     console.log(bot_left);
 });
+
+// Test if server is running
+if (bedrock_server.running()) {
+    console.log('The bedrock server is running');
+} else {
+    console.log('The bedrock server is not running');
+}
