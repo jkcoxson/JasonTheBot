@@ -32,7 +32,7 @@ const ops_system = new (require('./ops.js'))(bedrock_server, jason);
 const commands = {
     server: bedrock_server.command.bind(bedrock_server),
     ops: ops_system.command.bind(ops_system),
-    help: async (args, message) => {
+    help: async args => {
         if (args[0]) {
             return await get_help_message(args[0]);
         }

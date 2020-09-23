@@ -1,5 +1,6 @@
 const is_head_honcho = require('./head_honcho.js');
 const user_ids = require("./configs/user-ids.json");
+const get_help_message = require('./help.js');
 
 function user_registered(discord_id) {
     return user_ids.discord_id_to_minecraft.hasOwnProperty(discord_id);

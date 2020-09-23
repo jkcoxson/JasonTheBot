@@ -6,8 +6,8 @@ class help_manager {
     #available_commands;
     #cache;
 
-    constructor(path) {
-        this.#path = path;
+    constructor(help_messages_path) {
+        this.#path = help_messages_path;
         this.#available_commands = [];
         this.#cache = {};
         pfs.readdir(this.#path).then(names => {
@@ -31,8 +31,8 @@ class help_manager {
         }
 
         try {
-            const help_message = await pfs.readFile(path.join(this.#path, `${command}.md`))
-            cache[command] = help_message;
+            const help_message = (await pfs.readFile(path.join(this.#path, `${command}.md`))).toString('utf8');
+            this.#cache[command] = help_message;
             return help_message;
         } catch (error) {
             console.error(error);
