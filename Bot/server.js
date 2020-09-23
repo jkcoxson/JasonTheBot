@@ -2,7 +2,6 @@ const child_process = require('child_process');
 const path = require('path');
 const { EventEmitter } = require('events');
 const net = require('net');
-const config = require('./configs/bedrock_server.config.json');
 const process = require('process');
 const is_head_honcho = require('./head_honcho.js');
 const get_help_message = require('./help.js');
