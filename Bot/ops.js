@@ -1,8 +1,8 @@
 const is_head_honcho = require('./head_honcho.js');
-const gamertags = require("./configs/gamertags.json");
+const user_ids = require("./configs/user-ids.json");
 
 function user_registered(discord_id) {
-    return gamertags.discord_id_to_minecraft.hasOwnProperty(discord_id);
+    return user_ids.discord_id_to_minecraft.hasOwnProperty(discord_id);
 }
 
 function stringify_dates_time(date) {
@@ -97,7 +97,7 @@ module.exports = class ops {
 
         // Enables the OPS system if the person who disabled it leaves the game
         this.#bedrock_server.on('player-leave', player_left => {
-            if (gamertags.minecraft_to_discord_id[player_left].includes(this.#disabler ? this.#disabler.id : null)) {
+            if (user_ids.minecraft_to_discord_id[player_left].includes(this.#disabler ? this.#disabler.id : null)) {
                 if (!is_head_honcho(this.#disabler)) {
                     this.#permissions_manager.enable();
                 }
@@ -122,7 +122,7 @@ module.exports = class ops {
                         }
     
                         // If the user isn't playing
-                        if (!this.#bedrock_server.members.some(val => gamertags.discord_id_to_minecraft[message.author.id].includes(val))) {
+                        if (!this.#bedrock_server.members.some(val => user_ids.discord_id_to_minecraft[message.author.id].includes(val))) {
                             return 'you must be playing on the server in order to control the sleep system.';
                         }
     
