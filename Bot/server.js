@@ -5,7 +5,7 @@ const net = require('net');
 const config = require('./configs/bedrock_server.config.json');
 const process = require('process');
 const is_head_honcho = require('./head_honcho.js');
-const { resolve } = require('path');
+const get_help_message = require('./help.js');
 
 function exec_promisify(command) {
     return new Promise((resolve, reject) => {
@@ -264,6 +264,9 @@ module.exports = class bedrock_server extends EventEmitter {
                 } else {
                     return `you aren't allowed to use that command.`;
                 }
+                break;
+            case 'help':
+                return get_help_message('server');
                 break;
             default:
                 return `that's not a command you silly goose!`

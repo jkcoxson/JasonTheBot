@@ -4,7 +4,7 @@ const config = require('./config.json');
 const channels = require('./configs/channel-ids.json');
 const guilds = require('./configs/guild-ids.json');
 const set_up_death_counter = require('./death_counter.js');
-const is_head_honcho = require('./head_honcho.js');
+const get_help_message = require('./help.js');
 const loadlines = require('./loadlines.js');
 const set_up_discord_proxy = require('./discord_proxy.js');
 let date = new Date();
@@ -31,7 +31,13 @@ const ops_system = new (require('./ops.js'))(bedrock_server, jason);
 
 const commands = {
     server: bedrock_server.command.bind(bedrock_server),
-    ops: ops_system.command.bind(ops_system)
+    ops: ops_system.command.bind(ops_system),
+    help: async (args, message) => {
+        if (args[0]) {
+            return await get_help_message(args[0]);
+        }
+        return await get_help_message('help');
+    }
 };
 
 // Return to this code when a message is sent

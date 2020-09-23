@@ -210,6 +210,12 @@ module.exports = class ops {
 
                 return `the server isn't running right now, so the sleep system can't be reset.`
                 break;
+            case 'help':
+                return get_help_message('ops');
+                break;
+            default:
+                return `that's not a command you silly goose!`
+                break;
         }
     }
 }

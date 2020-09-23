@@ -1,0 +1,4 @@
+how to use the `ops` command:
+`~ops status` — find out if the sleep system is enabled, disabled, or timed out.
+`~ops disable [<minutes>]` — disable the sleep system for the specified amount of time. If there isn't a valid duration given, the default duration is 30 minutes. Additionally, to balance between people who want to use the night and people who want to sleep the night away, after the sleep system enables again, the sleep system is timed out for the same amount of time that it was disabled, so it can't be disabled again until the timeout expires.
+`~ops enable` — the person who disabled the sleep system can enable it earlier than it would be enabled if they're done with what they're doing at night. This also resets the timeout to what it would have been if the sleep system had only been disabled for how long it actually was disabled.
