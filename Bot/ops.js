@@ -123,7 +123,7 @@ module.exports = class ops {
     
                         // If the user isn't playing
                         if (!this.#bedrock_server.members.some(val => gamertags.discord_id_to_minecraft[message.author.id].includes(val))) {
-                            return 'you must be playing to control the sleep system.';
+                            return 'you must be playing on the server in order to control the sleep system.';
                         }
     
                         if (this.#permissions_manager.is_disabled()) {
@@ -202,7 +202,7 @@ module.exports = class ops {
                 if (this.#bedrock_server.running()) {
                     if (is_head_honcho(message.member)) {
                         this.#permissions_manager.reset();
-                        return `enabling the sleep system and resetting the timer.`;
+                        return `enabling the sleep system and resetting the timeout.`;
                     }
 
                     return `you do not have permission to run this command.`

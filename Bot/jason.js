@@ -72,9 +72,9 @@ module.exports = class jason_bot extends EventEmitter {
                     }
                 } else if (sleeping_match) {
                     if (/bot/i.test(sleeping_match[1])) {
-                        this.emit('bot-sleeping', sleeping_match[1]);
+                        this.emit('bot-sleep', sleeping_match[1]);
                     } else {
-                        this.emit('player-sleeping', sleeping_match[1]);
+                        this.emit('player-sleep', sleeping_match[1]);
                     }
                 } else if (death_match) {
                     if (/bot/i.test(death_match[1])) {
