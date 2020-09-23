@@ -199,7 +199,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     return response;
                 } else {
                     if (await this.computer_on()) {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
                         return 'the server is on, but not running the game server.';
                     } else {
                         return 'the server is not currently on.';
@@ -211,7 +211,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     return 'the game server is already running.';
                 } else {
                     if (await this.computer_on()) {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
                         message.reply('attempting to start the server.');
                         if (await this.start()) {
                             return 'the server is now running.';
@@ -246,7 +246,7 @@ module.exports = class bedrock_server extends EventEmitter {
                     }
                 } else {
                     if (await this.computer_on()) {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
                         return `the game server isn't running in the first place.`;
                     } else {
                         return `the server isn't powered on to begin with.`;
@@ -256,7 +256,7 @@ module.exports = class bedrock_server extends EventEmitter {
             case 'kill':
                 if (is_head_honcho(message.member)) {
                     try {
-                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`);
+                        await exec_promisify(`ssh ${this.#ssh_user}@${this.#server_ip} taskkill /IM "${path.basename(this.#program_path)}" /F`).catch(err => {});
                         return 'server terminated.';
                     } catch (error) {
                         return 'termination unsuccessful.';
