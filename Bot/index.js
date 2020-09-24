@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const config = require('./config.json');
 const channels = require('./configs/channel-ids.json');
 const guilds = require('./configs/guild-ids.json');
+const roles = require('./configs/role-ids.json');
 const set_up_death_counter = require('./death_counter.js');
 const get_help_message = require('./help.js');
 const loadlines = require('./loadlines.js');
@@ -76,6 +77,35 @@ client.on('message', async message => {
     }
 });
 
+const reactions_to_roles = {
+    rocket_league: roles.rocket_league,
+    among_us: roles.among_us,
+    stardew_valley: roles.stardew_valley,
+    minecraft: roles.minecraft,
+    smashbros: roles.super_smash_bros
+}
+
+client.on("messageReactionAdd", (reaction, user) => {
+    const message = reaction.message;
+    const emoji_name = reaction.emoji.name;
+    if (message.id === "743710929602216026") { // The 'react to this to get a role' message
+        if (reactions_to_roles.hasOwnProperty(emoji_name)) {
+            const to_add = message.guild.roles.cache.get(reactions_to_roles[emoji_name]);
+            message.guild.member(user).roles.add(to_add);
+        }
+    }
+});
+
+client.on("messageReactionRemove", (reaction, user) => {
+    const message = reaction.message;
+    const emoji_name = reaction.emoji.name;
+    if (message.id === "743710929602216026") { // The 'react to this to get a role' message
+        if (reactions_to_roles.hasOwnProperty(emoji_name)) {
+            const to_remove = message.guild.roles.cache.get(reactions_to_roles[emoji_name]);
+            message.guild.member(user).roles.remove(to_remove);
+        }
+    }
+});
 
 // Spit out random words for kicks. TODO: Import random.txt, choose a random word,
 // and say something every 3 hours between 8 AM and 9 PM
