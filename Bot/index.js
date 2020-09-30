@@ -77,8 +77,10 @@ client.on('message', async message => {
     } else { // Test for other messages for specific applications.
         if (message.content.toLowerCase().includes(`good bot`)) {
             message.channel.startTyping(); // Have JasonTheBot be typing while a response is created
-            message.channel.send('I know I am.');
-            message.channel.stopTyping();
+            setTimeout(() => {
+                message.channel.send('I know I am.');
+                message.channel.stopTyping();
+            }, 10);
         }
     }
 });
