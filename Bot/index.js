@@ -58,6 +58,7 @@ client.on('message', async message => {
         message.guild.id === guilds["jacksons-test-server"])
     ) {
         message.channel.startTyping(); // Have JasonTheBot be typing while a response is created
+        const wait_until = (new Date()).getTime() + 10
 
         const commandBody = message.content.slice(prefix.length); // Remove the prefix
         const args = commandBody.split(' '); // Split the message into array
@@ -73,7 +74,14 @@ client.on('message', async message => {
             message.reply(`that's not a command you silly goose!`);
         }
 
-        message.channel.stopTyping();
+        const time_now = (new Date()).getTime();
+        if (wait_until > time_now) {
+            setTimeout(() => {
+                message.channel.stopTyping();
+            }, wait_until - time_now);
+        } else {
+            message.channel.stopTyping();
+        }
     } else { // Test for other messages for specific applications.
         if (message.content.toLowerCase().includes(`good bot`)) {
             message.channel.startTyping(); // Have JasonTheBot be typing while a response is created
