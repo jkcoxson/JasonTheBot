@@ -67,17 +67,17 @@ client.on('message', async message => {
             const response = await commands[command](args, message);
             
             if (response) {
-                message.reply(response);
+                await message.reply(response);
             }
         } else {
-            message.reply(`that's not a command you silly goose!`);
+            await message.reply(`that's not a command you silly goose!`);
         }
 
         message.channel.stopTyping(true);
     } else { // Test for other messages for specific applications.
         if (message.content.toLowerCase().includes(`good bot`)) {
             message.channel.startTyping(); // Have JasonTheBot be typing while a response is created
-            message.channel.send('I know I am.');
+            await message.channel.send('I know I am.');
             message.channel.stopTyping(true);
         }
     }
