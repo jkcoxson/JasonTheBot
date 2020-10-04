@@ -226,7 +226,7 @@ module.exports = class bedrock_server extends EventEmitter {
                             return `the server didn't stop successfully.`;
                         }
                     } else {
-                        if (this.members.length > 0 || (this.bots.includes('JasonTheBot') ? this.bots.length > 1 : this.bots.length > 0)) {
+                        if (this.anybody_on()) {
                             return 'sorry, there are still players and/or bots connected, so no stopping the server for you.';
                         } else {
                             message.reply('attempting to stop the server.');
@@ -269,5 +269,9 @@ module.exports = class bedrock_server extends EventEmitter {
 
     running() {
         return Boolean(this.#BDS_process);
+    }
+
+    anybody_on() {
+        return this.members.length > 0 || (this.bots.includes('JasonTheBot') ? this.bots.length > 1 : this.bots.length > 0)
     }
 }

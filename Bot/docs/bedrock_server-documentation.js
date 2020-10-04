@@ -59,3 +59,10 @@ if (bedrock_server.running()) {
 } else {
     console.log('The bedrock server is not running');
 }
+
+// Test if anybody is online
+if (bedrock_server.anybody_online()) {
+    console.log('There is a player or bot on the server right now');
+} else {
+    console.log('Nobody is on the server right now');
+}
