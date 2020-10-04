@@ -20,6 +20,7 @@ function exec_promisify(command) {
 module.exports = class bedrock_server extends EventEmitter {
     #BDS_process;
     #tcp_server;
+    #stop_server_timeout;
 
     members;
     bots;
@@ -117,6 +118,11 @@ module.exports = class bedrock_server extends EventEmitter {
                             this.members.push(player);
                             this.emit('player-join', player);
                         }
+
+                        if (this.#stop_server_timeout) {
+                            clearTimeout(this.#stop_server_timeout);
+                            this.#stop_server_timeout = null;
+                        }
                     } else if (data_str.includes('Player disconnected:')) {
                         const player = data_str.match(/Player disconnected: (.+), xuid:/)[1];
                         if (/bot/i.test(player)) {
@@ -125,6 +131,14 @@ module.exports = class bedrock_server extends EventEmitter {
                         } else {
                             this.members.splice(this.members.indexOf(player), 1);
                             this.emit('player-leave', player);
+                        }
+
+                        if (!this.anybody_on()) {
+                            this.#stop_server_timeout = setTimeout(() => {
+                                this.stop().then(() => {
+                                    this.#stop_server_timeout = null;
+                                });
+                            }, 1000 * 60 * 15);
                         }
                     }
                 });
