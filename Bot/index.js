@@ -57,8 +57,6 @@ client.on('message', async message => {
         (message.channel.id === channels["bot-commands"] ||
         message.guild.id === guilds["jacksons-test-server"])
     ) {
-        message.channel.startTyping(); // Have JasonTheBot be typing while a response is created
-
         const commandBody = message.content.slice(prefix.length); // Remove the prefix
         const args = commandBody.split(' '); // Split the message into array
         const command = args.shift().toLowerCase(); // Remove first from command and lower all 
@@ -67,18 +65,14 @@ client.on('message', async message => {
             const response = await commands[command](args, message);
             
             if (response) {
-                await message.reply(response);
+                message.reply(response);
             }
         } else {
-            await message.reply(`that's not a command you silly goose!`);
+            message.reply(`that's not a command you silly goose!`);
         }
-
-        message.channel.stopTyping(true);
     } else { // Test for other messages for specific applications.
         if (message.content.toLowerCase().includes(`good bot`)) {
-            message.channel.startTyping(); // Have JasonTheBot be typing while a response is created
-            await message.channel.send('I know I am.');
-            message.channel.stopTyping(true);
+            message.channel.send('I know I am.');
         }
     }
 });
