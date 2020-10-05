@@ -119,11 +119,13 @@ module.exports = class ops {
 
         // Enables the OPS system if the person who disabled it leaves the game
         this.#bedrock_server.on('player-leave', player_left => {
-            if (user_ids.minecraft_to_discord_id[player_left].includes(this.#disabler ? this.#disabler.id : null)) {
-                if (!is_head_honcho(this.#disabler)) {
-                    this.#permissions_manager.enable();
+            if (user_ids.minecraft_to_discord_id[player_left]) {
+                if (user_ids.minecraft_to_discord_id[player_left].includes(this.#disabler ? this.#disabler.id : null)) {
+                    if (!is_head_honcho(this.#disabler)) {
+                        this.#permissions_manager.enable();
+                    }
+                    this.#disabler = null;
                 }
-                this.#disabler = null;
             }
         });
 
