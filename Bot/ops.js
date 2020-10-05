@@ -1,6 +1,7 @@
 const is_head_honcho = require('./head_honcho.js');
 const user_ids = require("./configs/user-ids.json");
 const get_help_message = require('./help.js');
+const { EventEmitter } = require('events');
 
 function user_registered(discord_id) {
     return user_ids.discord_id_to_minecraft.hasOwnProperty(discord_id);
@@ -17,11 +18,15 @@ function stringify_dates_time(date) {
     return `${hours}:${minutes}`;
 }
 
-class ops_permissions_manager {
+class ops_permissions_manager extends EventEmitter {
     #disabled_until;
     #timed_out_until;
+    #enable_timeout;
+    #timeout_expire_timeout;
 
     constructor() {
+        super();
+
         this.#disabled_until = 0;
         this.#timed_out_until = 0;
     }
@@ -54,21 +59,35 @@ class ops_permissions_manager {
         const now = (new Date()).getTime();
         const milliseconds_from_now = (minutes * 60 * 1000)
         this.#disabled_until = now + milliseconds_from_now;
+        this.#enable_timeout = setTimeout(() => {
+            this.emit('now-enabled');
+        }, milliseconds_from_now);
         this.#timed_out_until = now + (milliseconds_from_now * 2);
+        this.#timeout_expire_timeout = setTimeout(() => {
+            this.emit('timeout-expired');
+        }, milliseconds_from_now * 2);
     }
 
     enable() {
         if (this.is_disabled()) {
             const now = (new Date()).getTime();
             const how_early = this.#disabled_until - now;
-            this.#disabled_until = 0;
+            this.#disabled_until = now;
+            clearTimeout(this.#enable_timeout);
+            this.emit('now-enabled');
             this.#timed_out_until -= how_early * 2;
+            clearTimeout(this.#timeout_expire_timeout);
+            this.#timeout_expire_timeout = setTimeout(() => {
+                this.emit('timeout-expired');
+            }, this.#timed_out_until - now);
         }
     }
 
     reset() {
-        this.#disabled_until = 0;
-        this.#timed_out_until = 0;
+        const now = (new Date()).getTime();
+        this.#disabled_until = now;
+        this.#timed_out_until = now;
+        this.emit('reset');
     }
 }
 
@@ -87,11 +106,11 @@ module.exports = class ops {
         // The actual OPS system
         this.#jason.on('player-sleep', player_sleeping => {
             if (this.#permissions_manager.is_enabled()) {
-                this.#bedrock_server.write(`title @a actionbar ${player_sleeping} is sleeping`);
+                this.#bedrock_server.write(`titleraw @a actionbar {"rawtext":[{"translate":"sqad.ops.sleep","with":["${player_sleeping}"]}]}`);
                 setTimeout(() => {
 					this.#bedrock_server.write('time set 0');
 					this.#bedrock_server.write('weather clear 36000');
-					this.#bedrock_server.write(`title ${player_sleeping} actionbar Good Morning`);
+                    this.#bedrock_server.write(`titleraw ${player_sleeping} actionbar {"rawtext":[{"translate":"sqad.ops.goodMorning"}]}`);
                 }, 1000);
             }
         });
@@ -110,6 +129,19 @@ module.exports = class ops {
         this.#bedrock_server.on('stop', () => {
             this.#permissions_manager.reset();
             this.#disabler = null;
+        });
+
+        // Tell players when the ops system changes state
+        this.#permissions_manager.on('now-enabled', () => {
+            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.enabledButTimedOut","with":["${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
+        });
+
+        this.#permissions_manager.on('timeout-expired', () => {
+            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.noMoreTimedOut"]}]}`);
+        });
+
+        this.#permissions_manager.on('reset', () => {
+            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.reset"]}]}`);
         });
     }
 
@@ -141,22 +173,26 @@ module.exports = class ops {
                         if (mins_to_disable_for <= 0) {
                             this.#permissions_manager.disable_for(30);
                             this.#disabler = message.member;
+                            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                             return `you can't disable the sleep system for a negative amount of time, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                         }
 
                         if (mins_to_disable_for > 120 && !is_head_honcho(message.member)) {
                             this.#permissions_manager.disable_for(30);
                             this.#disabler = message.member;
+                            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                             return `you can't disable the sleep system for a more than 120 minutes, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                         }
 
                         this.#permissions_manager.disable_for(mins_to_disable_for);
                         this.#disabler = message.member;
+                        this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                         return `disabling the sleep system until ${this.#permissions_manager.stringify_disabled_until()} and timing out the sleep system until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                     }
 
                     this.#permissions_manager.disable_for(30);
                     this.#disabler = message.member;
+                    this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                     return `I didn't get a valid amount of time, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                 }
 
