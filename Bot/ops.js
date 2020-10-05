@@ -133,15 +133,15 @@ module.exports = class ops {
 
         // Tell players when the ops system changes state
         this.#permissions_manager.on('now-enabled', () => {
-            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.enabledButTimedOut","with":["${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
+            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"§asqad.ops.enabledButTimedOut","with":["${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
         });
 
         this.#permissions_manager.on('timeout-expired', () => {
-            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.noMoreTimedOut"]}]}`);
+            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"§asqad.ops.noMoreTimedOut"}]}`);
         });
 
         this.#permissions_manager.on('reset', () => {
-            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.reset"]}]}`);
+            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"§asqad.ops.reset"}]}`);
         });
     }
 
@@ -173,26 +173,26 @@ module.exports = class ops {
                         if (mins_to_disable_for <= 0) {
                             this.#permissions_manager.disable_for(30);
                             this.#disabler = message.member;
-                            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
+                            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"§asqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                             return `you can't disable the sleep system for a negative amount of time, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                         }
 
                         if (mins_to_disable_for > 120 && !is_head_honcho(message.member)) {
                             this.#permissions_manager.disable_for(30);
                             this.#disabler = message.member;
-                            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
+                            this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"§asqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                             return `you can't disable the sleep system for a more than 120 minutes, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                         }
 
                         this.#permissions_manager.disable_for(mins_to_disable_for);
                         this.#disabler = message.member;
-                        this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
+                        this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"§asqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                         return `disabling the sleep system until ${this.#permissions_manager.stringify_disabled_until()} and timing out the sleep system until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                     }
 
                     this.#permissions_manager.disable_for(30);
                     this.#disabler = message.member;
-                    this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"sqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
+                    this.#bedrock_server.write(`tellraw @a {"rawtext":[{"translate":"§asqad.ops.disabledAndTimedOut","with":["${this.#permissions_manager.stringify_disabled_until()}", "${this.#permissions_manager.stringify_timed_out_until()}"]}]}`);
                     return `I didn't get a valid amount of time, so I'm disabling the sleep system for the default 30 minutes. It is disabled until ${this.#permissions_manager.stringify_disabled_until()} and timed out until ${this.#permissions_manager.stringify_timed_out_until()}.`;
                 }
 
