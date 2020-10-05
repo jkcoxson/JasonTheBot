@@ -87,6 +87,8 @@ class ops_permissions_manager extends EventEmitter {
         const now = (new Date()).getTime();
         this.#disabled_until = now;
         this.#timed_out_until = now;
+        clearTimeout(this.#enable_timeout);
+        clearTimeout(this.#timeout_expire_timeout);
         this.emit('reset');
     }
 }
