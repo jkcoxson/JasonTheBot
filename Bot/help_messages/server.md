@@ -1,4 +1,4 @@
-how to use the `server` command:
+the `server` command allows you to control the Minecraft server. Here's how to use the it:
 `~server status` — find out whether the server is on, running the game server, and who's currently playing on the server.
 `~server start` — start the Minecraft game server so you can play.
 `~server stop` — stop the Minecraft game server once everyone is done. Administrators can add `--force` to the end of the command (`~server stop --force`) to stop the server even if people are still online.

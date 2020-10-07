@@ -43,7 +43,8 @@ const commands = {
             return await get_help_message(args[0]);
         }
         return await get_help_message('help');
-    }
+    },
+    location: require('./location.js')
 };
 
 // Return to this code when a message is sent
