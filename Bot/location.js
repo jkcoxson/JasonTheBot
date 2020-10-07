@@ -75,7 +75,7 @@ const location_manager = {
     list(user) {
         this.config();
         
-        if (this.locations.hasOwnProperty(user)) {
+        if (this.locations.hasOwnProperty(user) && this.locations[user].length > 0) {
             let result = 'here are your locations:';
             for (const [name, [coordinates, dimension]] of Object.entries(this.locations[user])) {
                 result += `\n${name}\t${coordinates}\t*${dimension}*`;
