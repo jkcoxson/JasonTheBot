@@ -88,7 +88,7 @@ const location_manager = {
 
     async remove(user, name) {
         this.config();
-        
+
         if (this.locations.hasOwnProperty(user)) {
             if (this.locations[user].hasOwnProperty(name)) {
                 delete this.locations[user][name];
@@ -118,23 +118,23 @@ module.exports = async function(args, message) {
                     if (match[3]) {
                         if (match[4]) {
                             if (args[0] === 'add') {
-                                return await location_manager.add(message.user.id, match[1], match[2], match[4].trim());
+                                return await location_manager.add(message.author.id, match[1], match[2], match[4].trim());
                             } else {
-                                return await location_manager.edit(message.user.id, match[1], match[2], match[4].trim());
+                                return await location_manager.edit(message.author.id, match[1], match[2], match[4].trim());
                             }
                         } else {
                             message.reply(`I'm not sure what is at the end of your command, but if it's a dimension, it's misspelled, so I'm going to use 'overworld' as the dimension.`);
                             if (args[0] === 'add') {
-                                return await location_manager.add(message.user.id, match[1], match[2], undefined);
+                                return await location_manager.add(message.author.id, match[1], match[2], undefined);
                             } else {
-                                return await location_manager.edit(message.user.id, match[1], match[2], undefined);
+                                return await location_manager.edit(message.author.id, match[1], match[2], undefined);
                             }
                         }
                     } else {
                         if (args[0] === 'add') {
-                            return await location_manager.add(message.user.id, match[1], match[2], undefined);
+                            return await location_manager.add(message.author.id, match[1], match[2], undefined);
                         } else {
-                            return await location_manager.edit(message.user.id, match[1], match[2], undefined);
+                            return await location_manager.edit(message.author.id, match[1], match[2], undefined);
                         }
                     }
                 } catch (err) {
@@ -147,14 +147,14 @@ module.exports = async function(args, message) {
             break;
         case 'delete':
             try {
-                return await location_manager.remove(message.user.id, args[1]);
+                return await location_manager.remove(message.author.id, args[1]);
             } catch (err) {
                 console.error(err);
                 return `I'm not sure what's going on, but for some reason I can't delete your location now. I'm sorry.`;
             }
             break;
         case 'list':
-            return location_manager.list(message.user.id);
+            return location_manager.list(message.author.id);
             break;
         case 'help':
             return get_help_message('location');
