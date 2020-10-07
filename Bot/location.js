@@ -45,7 +45,7 @@ const location_manager = {
         } else {
             this.locations[user] = {};
             try {
-                await write_location(user, name, coords, dimension)
+                await this.write_location(user, name, coords, dimension)
                 return 'location added successfully.';
             } catch (err) {
                 throw err;
