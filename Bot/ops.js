@@ -93,7 +93,7 @@ class ops_permissions_manager extends EventEmitter {
     }
 }
 
-module.exports = class ops {
+module.exports = class {
     #bedrock_server;
     #jason;
     #permissions_manager;
