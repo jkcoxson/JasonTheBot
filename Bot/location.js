@@ -3,13 +3,22 @@ const get_help_message = require('./help.js');
 
 const location_manager = {
     filename: './configs/locations.json',
-    locations: require(this.filename),
+
+    config() {
+        if (!this.locations) {
+            this.locations = require(this.filename);
+        }
+    },
 
     update_file() {
+        this.config();
+
         return fs_promises.writeFile(this.filename, JSON.stringify(this.locations));
     },
 
     async write_location(user, name, coords, dimension) {
+        this.config();
+
         this.locations[user][name] = [coords, dimension];
         try {
             await this.update_file();
@@ -20,6 +29,8 @@ const location_manager = {
     },
 
     async add(user, name, coords, dimension='overworld') {
+        this.config();
+
         if (this.locations.hasOwnProperty(user)) {
             if (this.locations[user].hasOwnProperty(name)) {
                 return 'that location already exists.';
@@ -43,6 +54,8 @@ const location_manager = {
     },
 
     async edit(user, name, coords, dimension='overworld') {
+        this.config();
+        
         if (this.locations.hasOwnProperty(user)) {
             if (this.locations[user].hasOwnProperty(name)) {
                 try {
@@ -60,6 +73,8 @@ const location_manager = {
     },
 
     list(user) {
+        this.config();
+        
         if (this.locations.hasOwnProperty(user)) {
             let result = 'here are your locations:';
             for (const [name, [coordinates, dimension]] of Object.entries(this.locations[user])) {
@@ -72,6 +87,8 @@ const location_manager = {
     },
 
     async remove(user, name) {
+        this.config();
+        
         if (this.locations.hasOwnProperty(user)) {
             if (this.locations[user].hasOwnProperty(name)) {
                 delete this.locations[user][name];
