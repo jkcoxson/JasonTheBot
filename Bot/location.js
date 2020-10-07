@@ -2,15 +2,15 @@ const fs_promises = require('fs/promises');
 const get_help_message = require('./help.js');
 
 const location_manager = {
-    #filename: './configs/locations.json',
-    #locations: require(this.#filename),
+    filename: './configs/locations.json',
+    locations: require(this.filename),
 
     update_file() {
-        return fs_promises.writeFile(this.#filename, JSON.stringify(this.#locations));
+        return fs_promises.writeFile(this.filename, JSON.stringify(this.locations));
     },
 
     async write_location(user, name, coords, dimension) {
-        this.#locations[user][name] = [coords, dimension];
+        this.locations[user][name] = [coords, dimension];
         try {
             await this.update_file();
             return;
@@ -20,8 +20,8 @@ const location_manager = {
     },
 
     async add(user, name, coords, dimension='overworld') {
-        if (this.#locations.hasOwnProperty(user)) {
-            if (this.#locations[user].hasOwnProperty(name)) {
+        if (this.locations.hasOwnProperty(user)) {
+            if (this.locations[user].hasOwnProperty(name)) {
                 return 'that location already exists.';
             } else {
                 try {
@@ -43,8 +43,8 @@ const location_manager = {
     },
 
     async edit(user, name, coords, dimension='overworld') {
-        if (this.#locations.hasOwnProperty(user)) {
-            if (this.#locations[user].hasOwnProperty(name)) {
+        if (this.locations.hasOwnProperty(user)) {
+            if (this.locations[user].hasOwnProperty(name)) {
                 try {
                     await this.write_location(user, name, coords, dimension)
                     return 'location edited successfully.';
@@ -60,9 +60,9 @@ const location_manager = {
     },
 
     list(user) {
-        if (this.#locations.hasOwnProperty(user)) {
+        if (this.locations.hasOwnProperty(user)) {
             let result = 'here are your locations:';
-            for (const [name, [coordinates, dimension]] of Object.entries(this.#locations[user])) {
+            for (const [name, [coordinates, dimension]] of Object.entries(this.locations[user])) {
                 result += `\n${name}\t${coordinates}\t*${dimension}*`;
             }
             return result;
@@ -72,9 +72,9 @@ const location_manager = {
     },
 
     async remove(user, name) {
-        if (this.#locations.hasOwnProperty(user)) {
-            if (this.#locations[user].hasOwnProperty(name)) {
-                delete this.#locations[user][name];
+        if (this.locations.hasOwnProperty(user)) {
+            if (this.locations[user].hasOwnProperty(name)) {
+                delete this.locations[user][name];
                 try {
                     await this.update_file();
                     return 'location deleted successfully.';
