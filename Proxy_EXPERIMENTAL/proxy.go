@@ -12,8 +12,12 @@ func main() {
 		panic(err)
 	}
 
-	recentservers.SetConfigFile("config/recent_servers.json")
-	recentServer, err := recentservers.GetRecentServer("Seth", servers[0].Name)
+	err = recentservers.SetConfigFile("config/recent_servers.json")
+	if err != nil {
+		panic(err)
+	}
+
+	recentServer, err := recentservers.GetRecentServer("Lydia", servers[0].Name)
 	if err != nil {
 		panic(err)
 	}

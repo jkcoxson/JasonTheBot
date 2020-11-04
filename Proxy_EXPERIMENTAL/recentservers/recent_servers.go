@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"sync"
 	"sync/atomic"
 )
 
-var recentServersFilenameSet uint32 = 0
 var recentServersFilename atomic.Value
-var loadRecentServersOnce sync.Once
+var recentServersLoaded uint32 = 0
 var recentServers map[string]string
 
 func init() {
@@ -20,27 +18,8 @@ func init() {
 
 func handleConfig() error {
 	// Check if the config filename for the most recent servers is set
-	if atomic.LoadUint32(&recentServersFilenameSet) == 0 {
-		return fmt.Errorf("the recent servers filename is not set, please set it before using the module")
-	}
-
-	// Load the most recent servers from the config file if not already done
-	var configErr error = nil
-	loadRecentServersOnce.Do(func() {
-		data, err := ioutil.ReadFile(recentServersFilename.Load().(string))
-		if err != nil {
-			configErr = err
-			return
-		}
-
-		err = json.Unmarshal(data, &recentServers)
-		if err != nil {
-			configErr = err
-			return
-		}
-	})
-	if configErr != nil {
-		return configErr
+	if atomic.LoadUint32(&recentServersLoaded) == 0 {
+		return fmt.Errorf("the recent servers are not loaded, please set the recent servers filename before using this module")
 	}
 
 	return nil
@@ -69,9 +48,22 @@ func updateRecentServers() error {
 //					should use as a config file to load and
 //					store the most recent servers that players
 //					have been on
-func SetConfigFile(filename string) {
+func SetConfigFile(filename string) error {
 	recentServersFilename.Store(filename)
-	atomic.StoreUint32(&recentServersFilenameSet, 1)
+
+	// Load the most recent servers from the config file
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(data, &recentServers)
+	if err != nil {
+		return err
+	}
+
+	atomic.StoreUint32(&recentServersLoaded, 1)
+	return nil
 }
 
 // GetRecentServer -- Gets the most recent server for the player,
