@@ -4,10 +4,11 @@ import (
 	"fmt"
 
 	"./recentservers"
+	"./servers"
 )
 
 func main() {
-	servers, err := loadServers("config/servers.json")
+	servers, err := servers.LoadServers("config/servers.json")
 	if err != nil {
 		panic(err)
 	}
