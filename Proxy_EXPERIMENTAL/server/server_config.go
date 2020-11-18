@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"sync"
 )
 
 // Server -- respresents a server config in a
@@ -19,16 +18,12 @@ type Server struct {
 // ConfigCollection -- stores several server configs (Server instance)
 //					   and offers utilities around them
 type ConfigCollection struct {
-	data  []Server
-	mutex sync.Mutex
+	data []Server
 }
 
 // ServerExists -- returns whether a server with the
 //				   given name exists in the config
 func (collection *ConfigCollection) ServerExists(name string) bool {
-	collection.mutex.Lock()
-	defer collection.mutex.Unlock()
-
 	for i := 0; i < len(collection.data); i++ {
 		if collection.data[i].Name == name {
 			return true
@@ -40,10 +35,8 @@ func (collection *ConfigCollection) ServerExists(name string) bool {
 
 // DefaultServer -- Returns the first server defined
 //					as the default server of the collection
+// IMPORTANT--THE *Server THAT'S RETURNED SHOULD ONLY BE READ, NOT WRITTEN
 func (collection *ConfigCollection) DefaultServer() (*Server, error) {
-	collection.mutex.Lock()
-	defer collection.mutex.Unlock()
-
 	if len(collection.data) > 0 {
 		return &collection.data[0], nil
 	}
@@ -52,10 +45,8 @@ func (collection *ConfigCollection) DefaultServer() (*Server, error) {
 }
 
 // GetServer -- returns the config for the server with the given name
+// IMPORTANT--THE *Server THAT'S RETURNED SHOULD ONLY BE READ, NOT WRITTEN
 func (collection *ConfigCollection) GetServer(name string) (*Server, error) {
-	collection.mutex.Lock()
-	defer collection.mutex.Unlock()
-
 	for i := 0; i < len(collection.data); i++ {
 		if collection.data[i].Name == name {
 			return &collection.data[i], nil
